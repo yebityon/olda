@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "macFrameworkPath": [],
+            "compilerPath": "/usr/local/bin/gcc-8",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "macos-gcc-x64",
+            "compilerArgs": [
+                "-I/usr/local/include",
+                "-I/usr/local/opt/openssl/include",
+                "-I/usr/local/include",
+                "-lstdc++fs"
+            ]
+        }
+    ],
+    "version": 4
+}
