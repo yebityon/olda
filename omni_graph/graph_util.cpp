@@ -1,5 +1,5 @@
 #pragma once
-#include "graph.hpp"
+#include "omni_graph.hpp"
 
 namespace olda
 {

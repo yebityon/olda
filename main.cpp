@@ -49,4 +49,11 @@ int main(int argc, char *argv[])
 
     olda::FileDatas origin(origin_log, origin_dir);
     olda::FileDatas target(target_log, target_dir);
+
+    const auto origin_graph = construct_graph(origin);
+    const auto target_graph = construct_graph(target);
+
+    const auto graph_diff = olda::graph_diff(origin_graph, target_graph);
+
+    // write part.
 }

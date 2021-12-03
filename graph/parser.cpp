@@ -11,8 +11,7 @@ namespace olda
         Weak Compatiblitiy - some method has different hash value from different other method.
 
     */
-    std::pair<Graph, Graph::vertex_descriptor>
-    analyze_omni_log(FileDatas fd)
+   OmniGraph construct_graph(FileDatas fd)
     {
         OmniGraph omni_graph;
         omni_graph.setFileData(fd);
@@ -87,6 +86,6 @@ namespace olda
 
         std::cout << "=================== END  ====================" << std::endl;
 
-        return {omni_graph.g, omni_graph.root};
+        return g;
     }
 }
