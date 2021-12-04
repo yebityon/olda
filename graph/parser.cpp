@@ -11,7 +11,7 @@ namespace olda
         Weak Compatiblitiy - some method has different hash value from different other method.
 
     */
-   OmniGraph construct_graph(FileDatas fd)
+   OmniGraph construct_graph(FileDatas& fd)
     {
         OmniGraph omni_graph;
         omni_graph.setFileData(fd);
@@ -86,6 +86,6 @@ namespace olda
 
         std::cout << "=================== END  ====================" << std::endl;
 
-        return g;
+        return omni_graph;
     }
 }

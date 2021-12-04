@@ -1,5 +1,5 @@
 #include "graph/graph.hpp"
-#include "tree_diff.hpp"
+#include "graph_diff/tree_diff.hpp"
 
 #include <iostream>
 #include <string>
@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
     }
 
     std::vector<std::string> inputfiles;
+    std::map<std::string, std::string> opt;
 
     for (int i = 0; i < argc; ++i)
     {
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
     const auto origin_graph = construct_graph(origin);
     const auto target_graph = construct_graph(target);
 
-    const auto graph_diff = olda::graph_diff(origin_graph, target_graph);
+    const auto graph_diff = olda::diff(origin_graph, target_graph,opt);
 
     // write part.
 }
