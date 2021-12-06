@@ -4,32 +4,21 @@
 namespace olda
 {
 
-    const std::vector<std::string> method_exit_key = {};
+    const std::vector<std::string> sp_method_exit_key = {
+        "MethodFullName", "FileNum"};
 
-    std::map<std::string, std::string> _parse_method_exit(const std::string method_exit_s)
+    std::map<std::string, std::string> _parse_method_exit(const std::string method_exit)
     {
+        std::map<std::string, std::string> mp = olda::parse_bytecode(method_exit);
 
-        std::vector<std::string> key_string;
-        std::string s;
-        auto tokens = split(method_exit_s, ',');
-        auto keys = method_exit_key;
+        const std::string other = mp["other"];
+        const std::vector<std::string> tmp = olda::split(other, ',');
 
-        if (method_exit_s.find("objectType=") == std::string::npos)
+        for (int i = 0; i < tmp.size(); ++i)
         {
-            keys.erase(keys.begin() + 5);
+            mp[sp_method_exit_key[i]] = tmp[i];
         }
-        if (tokens.size() != keys.size())
-        {
-            std::cout << method_exit_s << std::endl;
-            std::cout << tokens.size() << std::endl;
-            std::cout << keys.size() << std::endl;
-        }
-        assert(tokens.size() == keys.size());
-        std::map<std::string, std::string> mp;
-        for (int i = 0; i < tokens.size(); ++i)
-        {
-            mp[keys[i]] = tokens[i];
-        }
+
         return mp;
     };
 
@@ -44,17 +33,30 @@ namespace olda
 
         auto caller_top = omni_graph.caller.top();
 
-        assert(caller_top["method_fullname"] == mep["method_name"]);
-        omni_graph.res.emplace_back(caller_top["method_fullname"] + " <- " + mep["method_name"]);
+        assert(caller_top["MethodFullName"] == mep["MethodFullName"]);
+
+        omni_graph.res.emplace_back(caller_top["MethodFullName"] + " <- " + mep["MethodFullName"]);
+
         omni_graph.g[omni_graph.vertex_stack.top()].flow_hash =
             std::hash<std::string>()(omni_graph.g[omni_graph.vertex_stack.top()].flow_str);
-        // child hash
+
         const size_t child_hash = omni_graph.g[omni_graph.vertex_stack.top()].flow_hash;
+
         std::string in = "";
-        for (auto &param : omni_graph.method_param_list[caller_top["method_fullname"]])
+        std::string return_hash = "";
+
+        const bool isObject = (mep.find("objectType") != mep.end());
+
+        if (isObject)
         {
-            std::cout << param << std::endl;
+            // the returned value is object
         }
+        else
+        {
+            const std::string primitive_value = mep["Value"];
+            return_hash = std::to_string(std::hash<std::string>()(primitive_value));
+        }
+
         const size_t param_hash = std::hash<std::string>()(std::accumulate(
             omni_graph.g[omni_graph.vertex_stack.top()].param_list.begin(),
             omni_graph.g[omni_graph.vertex_stack.top()].param_list.end(),

@@ -4,33 +4,18 @@
 namespace olda
 {
 
-    const std::vector<std::string> method_param_keys = {};
+    const std::vector<std::string> sp_method_param_key = {
+        "MethodFullName", "FileNum"};
 
-    std::map<std::string, std::string> _parse_method_param(const std::string log)
+    std::map<std::string, std::string> _parse_method_param(const std::string method_param)
     {
+        std::map<std::string, std::string> mp = olda::parse_bytecode(method_param);
+        const std::string other = mp["other"];
+        std::vector<std::string> tmp = olda::split(order, ',');
 
-        std::vector<std::string> key_string;
-        auto tokens = split(log, ',');
-        auto keys = method_param_keys;
-
-        if (log.find("objectType=") == std::string::npos)
+        for (int i = 0; i < tmp.size(); ++i)
         {
-            // erase "objectType" from keys because param is not boject
-            keys.erase(keys.begin() + 5);
-        }
-        if (tokens.size() != keys.size())
-        {
-            std::cout << log << std::endl;
-            std::cout << tokens.size() << std::endl;
-            std::cout << keys.size() << std::endl;
-            assert(false);
-        }
-        assert(tokens.size() == keys.size());
-
-        std::map<std::string, std::string> mp;
-        for (int i = 0; i < tokens.size(); ++i)
-        {
-            mp[keys[i]] = tokens[i].substr(keys[i].size() + 1);
+            mp[sp_method_param_key[i]] = tmp[i];
         }
 
         return mp;
@@ -41,9 +26,9 @@ namespace olda
 
         auto mpp = _parse_method_param(log);
         std::string param;
-        std::string caller_vertex = omni_graph.caller.top()["hash"];
+        std::string caller_vertex = omni_graph.caller.top()["Hash"];
 
-        bool isObject = mpp.find("ObjectType") != mpp.end();
+        bool isObject = mpp.find("objectType") != mpp.end();
 
         if (isObject)
         {
@@ -56,8 +41,6 @@ namespace olda
         {
             param = mpp["Value"];
         }
-        std::cout << omni_graph.caller.top()["method_fullname"] << " " << param << std::endl;
-
         omni_graph.g[omni_graph.vertex_stack.top()].param_list.push_back(param);
         return;
     }

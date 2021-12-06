@@ -3,39 +3,26 @@
 
 namespace olda
 {
-
+    const std::vector<std::string> sp_method_entry_key = {
+        "Line", "LineNum",
+        "Class",
+        "MethodName", "Type", "Num", "File", "Hash", "MethodFullName", "FileNum"};
     std::map<std::string, std::string> _parse_method_entry(const std::string method_entry)
     {
-        std::vector<std::string> key = {
-            "event_id", "event_type", "thread_id", "data_id", "value",
-            "method", "nazo_1", "class", "method", "nazo_2",
-            "nazo_int", "filename", "hash", "method_fullname", "line"};
-        // optional
-        if (method_entry.find("VReceiver") != std::string::npos)
-        {
-            key.insert(key.begin() + 3, "vreceiver");
-        }
-        auto tokens = olda::split(method_entry, ',');
+        std::map<std::string, std::string> mp = olda::parse_bytecode(method_entry);
+        const std::string other = mp["other"];
+        const std::vector<std::string> tmp = olda::split(other, ',');
 
-        if (tokens.size() != key.size())
+        for (int i = 0; i < tmp.size(); ++i)
         {
-            std::cout << "token " << tokens.size() << std::endl;
-            std::cout << "key " << key.size() << std::endl;
+            mp[sp_method_entry_key[i]] = tmp[i];
         }
-
-        assert(tokens.size() == key.size());
-        std::map<std::string, std::string> mp;
-        for (int i = 0; i < tokens.size(); ++i)
-        {
-            mp[key[i]] = tokens[i];
-        }
+        // start from parse
         return mp;
     }
 
     void parse_method_entry(const std::string log, OmniGraph &omni_graph)
     {
-
-        assert(log.find("METHOD_ENTRY") != std::string::npos);
 
         omni_graph.local_fields.push(std::map<std::string, std::string>());
         omni_graph.local_prim.push(std::map<int, std::string>());
@@ -43,18 +30,15 @@ namespace olda
 
         std::map<std::string, std::string> mep = _parse_method_entry(log);
 
-        assert(mep["event_type"] == "EventType=METHOD_ENTRY");
-
         if (omni_graph.caller.empty())
         {
             // if the caller is empty, it indicate that this vertex is Main
 
             omni_graph.root = add_vertex(omni_graph.g);
-            omni_graph.g[omni_graph.root].method_hash = mep["hash"];
+            omni_graph.g[omni_graph.root].method_hash = mep["Hash"];
             omni_graph.g[omni_graph.root].edge_cnt += 1;
-            omni_graph.g[omni_graph.root].method_str = mep["method_fullname"];
+            omni_graph.g[omni_graph.root].method_str = mep["MethodFullName"];
             omni_graph.g[omni_graph.root].weak_flow = omni_graph.context;
-            assert(omni_graph.context.size() == 0);
             omni_graph.caller.push(mep);
             omni_graph.vertex_stack.push(omni_graph.root);
             return;
@@ -64,8 +48,8 @@ namespace olda
         Graph::vertex_descriptor from = omni_graph.vertex_stack.top();
         Graph::vertex_descriptor to = add_vertex(omni_graph.g);
 
-        std::string prev_method_name = prev_method["method_fullname"];
-        std::string current_method_name = mep["method_fullname"];
+        std::string prev_method_name = prev_method["MethodFullName"];
+        std::string current_method_name = mep["MethodFullName"];
         // update current information
         omni_graph.g[to].method_hash = mep["hash"];
         omni_graph.g[to].method_str = current_method_name;
@@ -82,7 +66,6 @@ namespace olda
         omni_graph.g[e].cost = omni_graph.g[from].edge_cnt;
 
         omni_graph.res.emplace_back(prev_method_name + " -> " + current_method_name);
-        assert(mep["event_type"] == "EventType=METHOD_ENTRY");
         omni_graph.caller.push(mep);
         omni_graph.vertex_stack.push(to);
     }

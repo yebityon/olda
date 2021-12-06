@@ -1,5 +1,9 @@
 #include "graph/graph.hpp"
 #include "graph_diff/tree_diff.hpp"
+#include "writer/graph_writer.hpp"
+#include "test/"
+
+#define debug_flush(var) std::cout << #var "=" << var << std::endl
 
 #include <iostream>
 #include <string>
@@ -10,7 +14,6 @@ int main(int argc, char *argv[])
 
     if (argc < 5)
     {
-
         std::cout << "USAGE : A_log.txt A_dir B_log.txt B_dir" << std::endl;
         exit(0);
     }
@@ -20,16 +23,20 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < argc; ++i)
     {
-
         const std::string arg = argv[i];
 
         if (arg == "--flow")
         {
-            // weak hash
+            opt["flow"] = "valid";
         }
         else if (arg == "--value")
         {
-            // value hash
+            opt["value"] = "valid";
+        }
+        else if (arg.find("--") != std::string::npos)
+        {
+            std::cout << "invalid option" << std::endl;
+            exit(1);
         }
         else
         {
@@ -42,11 +49,21 @@ int main(int argc, char *argv[])
     std::string target_log, target_dir;
     std::string target_dataids, target_logType, target_logObject, target_StringObject;
 
-    origin_log = argv[1];
+    origin_log = inputfiles[1];
     /* log dir contain classes.txt, dataids.txt*/
-    origin_dir = argv[2];
-    target_log = argv[3];
-    target_dir = argv[4];
+    origin_dir = inputfiles[2];
+    target_log = inputfiles[3];
+    target_dir = inputfiles[4];
+
+    // debug
+
+    debug_flush(origin_log);
+    debug_flush(origin_dir);
+    debug_flush(target_log);
+    debug_flush(target_dir);
+
+    debug_flush(opt["flow"]);
+    debug_flush(opt["value"]);
 
     olda::FileDatas origin(origin_log, origin_dir);
     olda::FileDatas target(target_log, target_dir);
@@ -54,7 +71,11 @@ int main(int argc, char *argv[])
     const auto origin_graph = construct_graph(origin);
     const auto target_graph = construct_graph(target);
 
-    const auto graph_diff = olda::diff(origin_graph, target_graph,opt);
+    const auto graph_diff = olda::diff(origin_graph, target_graph, opt);
 
     // write part.
+    olda::write_graphviz(origin_graph, "origin.dotf");
+    olda::write_graphviz(target_graph, "target.dot");
+
+    olda::write_diffGraph(graph_diff, "diff.dot");
 }

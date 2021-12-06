@@ -3,27 +3,29 @@
 
 namespace olda
 {
-    std::map<std::string, std::string> _parse_write_object(const std::string write_object_log)
-    {
 
+    std::map<std::string, std::string>
+    _parse_write_object(const std::string write_object_log)
+    {
+        std::map<std::string, std::string> res;
         std::vector<std::string> parsed_log = olda::split(write_object_log, ',');
 
-        std::map<std::string, std::string> mp;
-        return mp;
+        for (auto &inst : parsed_log)
+        {
+            // for each instruction, get detail
+            std::vector<std::string> inst_detail = olda::split(inst, '=');
+            if (inst_detail.size() < 2)
+            {
+                // No "=" in the log
+                res["other"] += " " + inst_detail.front();
+            }
+            else
+            {
+                res[inst_detail[0]] = inst_detail[1];
+            }
+        }
 
-        // for(auto& key : basic_key){
-        //     // show that exist
-        //     this -> keys[key] = 1;
-        // }
-        // for(auto& parsed_inst : parsed_log) {
-        //     std::vector<std::string> inst_info = olda : split(parsed_inst,'=');
-        //     if(inst_info.size()  <  2) {
-        //         // No "=" in the log
-        //         this -> info["other"] += " " + inst_info.front();
-        //     } else {
-        //         this -> info[inst_info[0]] = inst_info[1];
-        //     }
-        // }
+        return res;
     }
 
     void parse_write_object(const std::string log, OmniGraph &omni_graph)
