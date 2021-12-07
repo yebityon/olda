@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     debug_flush(opt["flow"]);
     debug_flush(opt["value"]);
 
-    std::cout << "[olda]: analyzing metafile....";
+    printf("%s", "[olda]: analyzing metafile....");
     olda::FileDatas origin(origin_log, origin_dir);
     olda::FileDatas target(target_log, target_dir);
     std::cout << "DONE!!\n";

@@ -25,8 +25,14 @@ namespace olda
     {
 
         auto mpp = _parse_method_param(log);
+        const int thread = std::stoi(mpp["ThreadId"]);
+        
+        auto& caller = omni_graph.caller[thread];
+        auto& vertex_stack = omni_graph.vertex_stack[thread];
+        
+
         std::string param;
-        std::string caller_vertex = omni_graph.caller.top()["Hash"];
+        std::string caller_vertex = caller.top()["Hash"];
 
         bool isObject = mpp.find("objectType") != mpp.end();
 
@@ -40,7 +46,7 @@ namespace olda
         {
             param = mpp["Value"];
         }
-        omni_graph.g[omni_graph.vertex_stack.top()].param_list.push_back(param);
+        omni_graph.g[vertex_stack.top()].param_list.push_back(param);
         return;
     }
 

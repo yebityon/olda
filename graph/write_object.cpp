@@ -111,6 +111,12 @@ namespace olda
                 const int target_obj = omni_graph.par_to_objId[par_id];
                 const std::string store_value = wop["Value"];
 
+                if (wop["Value"].size() > 9)
+                {
+                    std::cout << "Warning: Invalid value size:" << log << ":" << wop["Value"] << std::endl;
+                    return;
+                }
+
                 const std::string store_value_type = extract_method_from_dataids(event_detail, "Type=");
 
                 if (is_primitive_type(store_value_type))
@@ -167,6 +173,11 @@ namespace olda
                     }
                     else
                     {
+                        if (wop["Value"].size() > 9)
+                        {
+                            std::cout << "Warning: Invalid value size:" << log << ":" << wop["Value"] << std::endl;
+                            return;
+                        }
                         const int object_id = std::stoi(wop["Value"]);
                         omni_graph.object_order[object_id][-1] += eventType;
 

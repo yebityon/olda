@@ -100,9 +100,9 @@ namespace olda
         Graph g; // Main Graph
         Graph::vertex_descriptor root;
         // threadId                      // the root of Main graph
-        std::stack<Graph::vertex_descriptor> vertex_stack; // call stack
-        std::vector<std::string> res;                      //
-        std::stack<std::map<std::string, std::string>> caller;
+        std::map<int, std::stack<Graph::vertex_descriptor>> vertex_stack; // call stack
+        std::vector<std::string> res;                                     //
+        std::map<int, std::stack<std::map<std::string, std::string>>> caller;
         std::string context; // for weak hash
         std::vector<std::string> omni_log;
 

@@ -25,13 +25,17 @@ namespace olda
     void parse_method_exit(const std::string log, OmniGraph &omni_graph)
     {
         // before clculate all child hash
-
-        auto v = omni_graph.vertex_stack.top();
-        auto t = adjacent_vertices(v, omni_graph.g);
-
         std::map<std::string, std::string> mep = _parse_method_exit(log);
 
-        auto caller_top = omni_graph.caller.top();
+        const int thread = std::stoi(mep["ThreadId"]);
+
+        auto &caller = omni_graph.caller[thread];
+        auto &vertex_stack = omni_graph.vertex_stack[thread];
+
+        auto v = vertex_stack.top();
+        auto t = adjacent_vertices(v, omni_graph.g);
+
+        auto caller_top = caller.top();
 
         if (caller_top["MethodFullName"] != mep["MethodFullName"])
         {
@@ -41,10 +45,10 @@ namespace olda
 
         omni_graph.res.emplace_back(caller_top["MethodFullName"] + " <- " + mep["MethodFullName"]);
 
-        omni_graph.g[omni_graph.vertex_stack.top()].flow_hash =
-            std::hash<std::string>()(omni_graph.g[omni_graph.vertex_stack.top()].flow_str);
+        omni_graph.g[vertex_stack.top()].flow_hash =
+            std::hash<std::string>()(omni_graph.g[vertex_stack.top()].flow_str);
 
-        const size_t child_hash = omni_graph.g[omni_graph.vertex_stack.top()].flow_hash;
+        const size_t child_hash = omni_graph.g[vertex_stack.top()].flow_hash;
 
         size_t return_hash = 0;
 
@@ -65,17 +69,17 @@ namespace olda
         }
 
         const size_t param_hash = std::hash<std::string>()(std::accumulate(
-            omni_graph.g[omni_graph.vertex_stack.top()].param_list.begin(),
-            omni_graph.g[omni_graph.vertex_stack.top()].param_list.end(),
+            omni_graph.g[vertex_stack.top()].param_list.begin(),
+            omni_graph.g[vertex_stack.top()].param_list.end(),
             std::to_string(return_hash),
             [](auto &lhs, auto &rhs)
             { return lhs + rhs; }));
 
-        omni_graph.g[omni_graph.vertex_stack.top()].param_hash = param_hash;
+        omni_graph.g[vertex_stack.top()].param_hash = param_hash;
 
         // pop the method information.
-        omni_graph.caller.pop();
-        omni_graph.vertex_stack.pop();
+        caller.pop();
+        vertex_stack.pop();
         omni_graph.local_fields.pop();
         omni_graph.local_prim.pop();
         omni_graph.local_obj.pop();

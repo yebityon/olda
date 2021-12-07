@@ -29,8 +29,12 @@ namespace olda
         omni_graph.local_obj.push(std::map<int, std::string>());
 
         std::map<std::string, std::string> mep = _parse_method_entry(log);
+        const int thread = std::stoi(mep["ThreadId"]);
 
-        if (omni_graph.caller.empty())
+        auto &caller = omni_graph.caller[thread];
+        auto &vertex_stack = omni_graph.vertex_stack[thread];
+
+        if (caller.empty())
         {
             // if the caller is empty, it indicate that this vertex is Main
 
@@ -39,13 +43,13 @@ namespace olda
             omni_graph.g[omni_graph.root].edge_cnt += 1;
             omni_graph.g[omni_graph.root].method_str = mep["MethodFullName"];
             omni_graph.g[omni_graph.root].weak_flow = omni_graph.context;
-            omni_graph.caller.push(mep);
-            omni_graph.vertex_stack.push(omni_graph.root);
+            caller.push(mep);
+            vertex_stack.push(omni_graph.root);
             return;
         }
 
-        auto &prev_method = omni_graph.caller.top();
-        Graph::vertex_descriptor from = omni_graph.vertex_stack.top();
+        auto &prev_method = caller.top();
+        Graph::vertex_descriptor from = vertex_stack.top();
         Graph::vertex_descriptor to = add_vertex(omni_graph.g);
 
         std::string prev_method_name = prev_method["MethodFullName"];
@@ -66,8 +70,8 @@ namespace olda
         omni_graph.g[e].cost = omni_graph.g[from].edge_cnt;
 
         omni_graph.res.emplace_back(prev_method_name + " -> " + current_method_name);
-        omni_graph.caller.push(mep);
-        omni_graph.vertex_stack.push(to);
+        caller.push(mep);
+        vertex_stack.push(to);
     }
 
 }
