@@ -16,7 +16,7 @@ namespace olda
     std::vector<std::string> split(const std::string s, char terminator)
     {
         std::vector<std::string> v;
-        std::string tmp;
+        std::string tmp = "";
         for (const auto c : s)
         {
             if (c == terminator)

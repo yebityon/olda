@@ -9,11 +9,11 @@ SRC = ~/Documents/Github/olda
 
 all: $(SRC)/main.cpp $(SRC)/graph/*.cpp $(SRC)/omni_graph/*.cpp
 
-	g++-8 $(BOOST_PATH) -c -std=c++17 -lstdc++fs $(SRC)/main.cpp 
-	g++-8 $(BOOST_PATH) -c -std=c++17 -lstdc++fs $(SRC)/omni_graph/*.cpp
-	g++-8 $(BOOST_PATH) -c -std=c++17 -lstdc++fs $(SRC)/graph_diff/*.cpp
-	g++-8 $(BOOST_PATH) -c -std=c++17 -lstdc++fs $(SRC)/graph/*.cpp
-	g++-8 $(BOOST_PATH) -c -std=c++17 -lstdc++fs $(SRC)/writer/*.cpp
+	g++-8 $(BOOST_PATH) -c -O2 -std=c++17 -lstdc++fs $(SRC)/main.cpp 
+	g++-8 $(BOOST_PATH) -c -O2 -std=c++17 -lstdc++fs $(SRC)/omni_graph/*.cpp
+	g++-8 $(BOOST_PATH) -c -O2 -std=c++17 -lstdc++fs $(SRC)/graph_diff/*.cpp
+	g++-8 $(BOOST_PATH) -c -O2 -std=c++17 -lstdc++fs $(SRC)/graph/*.cpp
+	g++-8 $(BOOST_PATH) -c -O2 -std=c++17 -lstdc++fs $(SRC)/writer/*.cpp
 	g++-8 -o olda *.o -lstdc++fs
 	rm -rf *.o
 

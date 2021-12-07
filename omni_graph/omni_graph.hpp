@@ -99,14 +99,12 @@ namespace olda
 
         Graph g; // Main Graph
         Graph::vertex_descriptor root;
-        // threadId                      // the root of Main graph
+        // {ThreadId : stack<>}           
         std::map<int, std::stack<Graph::vertex_descriptor>> vertex_stack; // call stack
-        std::vector<std::string> res;                                     //
+        // {ThreadId : stack<>}
         std::map<int, std::stack<std::map<std::string, std::string>>> caller;
         std::string context; // for weak hash
         std::vector<std::string> omni_log;
-
-        std::map<std::string, std::vector<std::string>> method_param_list;
 
         // { owner -> FieldName : value }
         std::map<std::string, std::map<std::string, std::string>> static_fields;
@@ -124,14 +122,10 @@ namespace olda
         std::map<int, std::map<int, std::string>> object_order;
 
         // for the primitive value.
-        std::map<int, std::string> variable;
-
         // map parent_id to object id. parent_id is recoreded in dataids.
         std::map<int, int> par_to_objId;
         // map parent_id to array_index. this method is used only method realted with array.
         std::map<int, int> array_par_to_idx;
-
-        std::map<int, std::map<int, std::vector<std::string>>> debug_array_order;
 
         // parsed dataids
         std::vector<std::map<std::string, std::string>> dataids;
@@ -150,6 +144,7 @@ namespace olda
             stringfile = fd.stringfile;
         };
     };
+    
     std::vector<std::string> split(const std::string s, char terminator);
     bool is_exist(const std::vector<std::string> v, std::string log);
     bool is_string_type(const std::string &log);

@@ -68,8 +68,7 @@ namespace olda
         omni_graph.g[e].from = prev_method_name;
         omni_graph.g[e].to = current_method_name;
         omni_graph.g[e].cost = omni_graph.g[from].edge_cnt;
-
-        omni_graph.res.emplace_back(prev_method_name + " -> " + current_method_name);
+        
         caller.push(mep);
         vertex_stack.push(to);
     }

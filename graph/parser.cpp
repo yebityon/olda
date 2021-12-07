@@ -22,6 +22,7 @@ namespace olda
         int filisize = omni_graph.omni_log.size();
         int crt_progress = 0;
         long long cnt = 0;
+
         for (std::string log : omni_graph.omni_log)
         {
             cnt += 1;
@@ -31,7 +32,9 @@ namespace olda
                 std::cout << crt_progress << "%" << std::endl;
             }
 
-            if (is_exist(entry_orders, log))
+            const std::string eventType = olda::parse_bytecode(log)["EventType"];
+
+            if (eventType == "METHOD_ENTRY")
             {
                 const int thread_id = std::stoi(extract_method_from_dataids(log, "ThreadId="));
                 auto &vertex_stack = omni_graph.vertex_stack[thread_id];
@@ -49,29 +52,27 @@ namespace olda
                 }
                 parse_method_entry(log, omni_graph);
             }
-            else if (is_exist(method_param, log))
+            else if (eventType == "METHOD_PARAM")
             {
-
                 parse_method_param(log, omni_graph);
             }
-            else if (is_exist(exit_orders, log))
+            else if (eventType == "METHOD_NORMAL_EXIT")
             {
-
+                // Note : METHOD_exception is also write order.
                 parse_method_exit(log, omni_graph);
             }
-            else if (is_exist(write_orders, log))
+            else if (eventType == "LOCAL_STORE" || 
+                    eventType == "LOCAL_INCREMENT" ||
+                 eventType == "PUT_INSTANCE_FIELD" || 
+                 eventType == "PUT_INSTANCE_FIELD_VALUE" || 
+                 eventType == "PUT_STATIC_FIELD")
             {
-
-                auto tmp = omni_graph.object_order;
-
-                if (log.find("ARRAY") != std::string::npos)
-                {
-                    parse_write_array(log, omni_graph);
-                }
-                else
-                {
-                    parse_write_object(log, omni_graph);
-                }
+                parse_write_object(log, omni_graph);
+            }
+            else if (eventType == "ARRAY_STORE" || eventType == "ARRAY_STORE_VALUE" || 
+                     eventType == "ARRAY_STORE_INDEX")
+            {
+                parse_write_array(log, omni_graph);
             }
             else if (is_exist(read_orders, log))
             {
@@ -84,7 +85,6 @@ namespace olda
 
                 if (vertex_stack.empty())
                     continue;
-                caller.top()["flow_info"] += log;
                 omni_graph.g[vertex_stack.top()].flow_str += log;
             }
         }

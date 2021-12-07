@@ -35,7 +35,6 @@ namespace olda
         std::string caller_vertex = caller.top()["Hash"];
 
         bool isObject = mpp.find("objectType") != mpp.end();
-
         if (isObject)
         {
             const int object_id = std::stoi(mpp["Value"]);

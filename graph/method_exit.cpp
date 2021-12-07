@@ -43,7 +43,6 @@ namespace olda
             std::cout << caller_top["MethodFullName"] << " " << mep["MethodFullName"] << std::endl;
         };
 
-        omni_graph.res.emplace_back(caller_top["MethodFullName"] + " <- " + mep["MethodFullName"]);
 
         omni_graph.g[vertex_stack.top()].flow_hash =
             std::hash<std::string>()(omni_graph.g[vertex_stack.top()].flow_str);

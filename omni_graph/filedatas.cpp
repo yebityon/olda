@@ -146,7 +146,7 @@ namespace olda
             elem["EventDetail"] += tmp;
             res.emplace_back(elem);
         }
-        std::sort(res.begin(), res.end(), [](auto lhs, auto rhs)
+        std::sort(res.begin(), res.end(), [](auto& lhs, auto& rhs)
                   { return std::stoi(lhs["DataId"]) < std::stoi(rhs["DataId"]); });
         this->dataids = res;
     }
