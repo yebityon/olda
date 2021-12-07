@@ -97,8 +97,9 @@ namespace olda
 
         ~OmniGraph(){};
 
-        Graph g;                                           // Main Graph
-        Graph::vertex_descriptor root;                     // the root of Main graph
+        Graph g; // Main Graph
+        Graph::vertex_descriptor root;
+        // threadId                      // the root of Main graph
         std::stack<Graph::vertex_descriptor> vertex_stack; // call stack
         std::vector<std::string> res;                      //
         std::stack<std::map<std::string, std::string>> caller;
@@ -106,6 +107,7 @@ namespace olda
         std::vector<std::string> omni_log;
 
         std::map<std::string, std::vector<std::string>> method_param_list;
+
         // { owner -> FieldName : value }
         std::map<std::string, std::map<std::string, std::string>> static_fields;
         // it must be stack... whenever call method or fuction, store all data

@@ -33,7 +33,11 @@ namespace olda
 
         auto caller_top = omni_graph.caller.top();
 
-        assert(caller_top["MethodFullName"] == mep["MethodFullName"]);
+        if (caller_top["MethodFullName"] != mep["MethodFullName"])
+        {
+            std::cout << "Assertion failed:";
+            std::cout << caller_top["MethodFullName"] << " " << mep["MethodFullName"] << std::endl;
+        };
 
         omni_graph.res.emplace_back(caller_top["MethodFullName"] + " <- " + mep["MethodFullName"]);
 

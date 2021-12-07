@@ -39,6 +39,8 @@ namespace olda
             g[v].output_format = g[v].method_str;
         }
 
+        std::cout << "before writing diffGraph" << std::endl;
+
         std::ofstream graph_dot_file(output_filename);
         boost::write_graphviz(graph_dot_file, g,
                               boost::make_label_writer(get(&method_vertex::output_format, g)),

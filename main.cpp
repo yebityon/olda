@@ -64,21 +64,26 @@ int main(int argc, char *argv[])
     debug_flush(opt["flow"]);
     debug_flush(opt["value"]);
 
+    std::cout << "[olda]: analyzing metafile....";
     olda::FileDatas origin(origin_log, origin_dir);
     olda::FileDatas target(target_log, target_dir);
+    std::cout << "DONE!!\n";
 
-    std::cout << "[olda]: constructing graph....\n";
+    std::cout << "[olda]: constructing graph....";
     const auto origin_graph = construct_graph(origin);
     const auto target_graph = construct_graph(target);
-    std::cout << "[olda]: DONE!!\n";
+    std::cout << " DONE!!\n";
 
-    std::cout << "[olda]: calculating diff_graph....\n";
+    std::cout << "[olda]: calculating diff_graph....";
     const auto graph_diff = olda::diff(origin_graph, target_graph, opt);
-    std::cout << "[olda]: DONE!!\n";
+    std::cout << " DONE!!\n";
 
-    // write part.
-    olda::write_graphviz(origin_graph, "origin.dotf");
-    olda::write_graphviz(target_graph, "target.dot");
+    std::cout << "[olda]: writing tree file....";
+    olda::write_graphviz(origin_graph, "./target/origin.dot");
+    olda::write_graphviz(target_graph, "./target/target.dot");
+    std::cout << " DONE!!\n";
 
-    olda::write_diffGraph(graph_diff, "diff.dot");
+    std::cout << "[olda]: writing diff tree....";
+    olda::write_diffGraph(graph_diff, "./target/diff.dot");
+    std::cout << " DONE!!\n";
 }

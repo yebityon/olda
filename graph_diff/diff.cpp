@@ -102,8 +102,16 @@ namespace olda
                     bool is_inserted = false;
                     boost::tie(e, is_inserted) = add_edge(prevVertex, new_vertex, diffGraph);
                 }
-                prevG.pop();
-                prevU.pop();
+                if (not prevG.empty())
+                {
+                    prevG.pop();
+                }
+                if (not prevU.empty())
+                {
+                    prevU.pop();
+                }
+                gi++;
+                ui++;
                 prevG.push(new_vertex);
                 prevU.push(new_vertex);
             }
@@ -164,7 +172,8 @@ namespace olda
                 if (is_exist)
                 {
                     // proceed ui to u_match_idx;
-                    while( ui < u_match_idx){
+                    while (ui < u_match_idx)
+                    {
                         auto u_prevVertex = prevU.top();
                         auto new_vertex = add_vertex(diffGraph);
                         new_vertex = u_path[ui];
@@ -178,15 +187,16 @@ namespace olda
                     auto g_prevVertex = prevG.top();
                     auto new_vertex = g_path[gi];
 
-                    Graph::edge_descriptor e; bool is_inserted = false;
-                    boost::tie(e,is_inserted) = add_edge(g_prevVertex,new_vertex,diffGraph);
+                    Graph::edge_descriptor e;
+                    bool is_inserted = false;
+                    boost::tie(e, is_inserted) = add_edge(g_prevVertex, new_vertex, diffGraph);
 
                     auto u_prevVertex = prevU.top();
-                    
+
                     boost::tie(e, is_inserted) = add_edge(u_prevVertex, new_vertex, diffGraph);
-                    
+
                     prevG.push(new_vertex);
-                    
+
                     // insert graph
                     ui = u_match_idx + 1;
                     gi++;
@@ -209,5 +219,7 @@ namespace olda
             // cant gling
         }
         // some path may not have been finished. make sure iterate all vertex.
+
+        return diffGraph;
     }
 }
