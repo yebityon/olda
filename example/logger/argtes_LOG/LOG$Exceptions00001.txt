@@ -1,0 +1,3 @@
+10,M,/ by zero
+10,CS,0
+10,S,F,argtes,main,argtes.java,24

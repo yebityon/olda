@@ -3,32 +3,21 @@
 
 namespace olda
 {
+    const std::vector<std::string> sp_write_array_key = {};
 
-    const std::vector<std::string> write_array_key = {};
-
-    std::map<std::string, std::string> _parse_write_array(const std::string write_object_log)
+    std::map<std::string, std::string>
+    _parse_write_array(const std::string write_array, const std::vector<std::string> &key = {})
     {
+        std::map<std::string, std::string> mp = olda::parse_bytecode(write_array);
+        const std::string other = mp["other"];
+        std::vector<std::string> tmp = olda::split(other, ',');
 
-        std::vector<std::string> parsed_log = olda::split(write_object_log, ',');
-
-        std::map<std::string, std::string> mp;
+        for (int i = 0; i < key.size(); ++i)
+        {
+            mp[key[i]] = tmp[i];
+        }
         return mp;
-
-        // for(auto& key : basic_key){
-        //     // show that exist
-        //     this -> keys[key] = 1;
-        // }
-        // for(auto& parsed_inst : parsed_log) {
-        //     std::vector<std::string> inst_info = olda : split(parsed_inst,'=');
-        //     if(inst_info.size()  <  2) {
-        //         // No "=" in the log
-        //         this -> info["other"] += " " + inst_info.front();
-        //     } else {
-        //         this -> info[inst_info[0]] = inst_info[1];
-        //     }
-        // }
     }
-
     /*
     Array order (ARRAY_STORE,ARRAY_STORE_INDEX,ARRAY_STORE_VALUE) DO NOT mention var name.
     It directly affect array object.
@@ -54,7 +43,7 @@ namespace olda
                 // Stored value is Object
                 const int object_id = std::stoi(wop["Value"]);
                 std::string object_value;
-                if (wop["objectType"] != "java.lang.String")
+                if (olda::is_string_type(wop["objectType"]))
                 {
                     object_value = omni_graph.object_order[object_id][-1];
                 }
@@ -93,6 +82,7 @@ namespace olda
         {
             // throw exception. something is wrong
             std::cout << "WTF" << std::endl;
+            exit(1);
         }
         return;
     }

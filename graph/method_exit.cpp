@@ -42,25 +42,28 @@ namespace olda
 
         const size_t child_hash = omni_graph.g[omni_graph.vertex_stack.top()].flow_hash;
 
-        std::string in = "";
-        std::string return_hash = "";
+        size_t return_hash = 0;
 
         const bool isObject = (mep.find("objectType") != mep.end());
 
         if (isObject)
         {
             // the returned value is object
+            // TODO : if the obj is string, just add primitive value
+            const int object_id = std::stoi(mep["Value"]);
+            const size_t object_hash = std::hash<std::string>()(omni_graph.object_order[object_id][-1]);
+            return_hash = object_hash;
         }
         else
         {
             const std::string primitive_value = mep["Value"];
-            return_hash = std::to_string(std::hash<std::string>()(primitive_value));
+            return_hash = std::hash<std::string>()(primitive_value);
         }
 
         const size_t param_hash = std::hash<std::string>()(std::accumulate(
             omni_graph.g[omni_graph.vertex_stack.top()].param_list.begin(),
             omni_graph.g[omni_graph.vertex_stack.top()].param_list.end(),
-            in,
+            std::to_string(return_hash),
             [](auto &lhs, auto &rhs)
             { return lhs + rhs; }));
 

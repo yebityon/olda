@@ -1,0 +1,3 @@
+0,0,myTest,<init>,()V,1,myTest.java,204b3c4dea2bb90b4b56dff35c6c2a032351043c
+0,1,myTest,main,([Ljava/lang/String;)V,9,myTest.java,b423818703b49d1f2236c2308613d0faeeab9de0
+0,2,myTest,method_A,(Ljava/lang/String;)V,2,myTest.java,25d698a5dd4e7452416ef9a276bdfcb0177d8ad8

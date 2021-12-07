@@ -71,12 +71,13 @@ namespace olda
                 omni_graph.g[omni_graph.vertex_stack.top()].flow_str += log;
             }
         }
+
         std::cout << "=================== DEBUG ======================" << std::endl;
 
         std::cout << " **************** object_order *****************" << std::endl;
         for (auto &mp : omni_graph.object_order)
         {
-            std::cout << " ++++++ " << mp.first << " : " << omni_graph.typefile[std::stoi(omni_graph.objectfile[mp.first][1])][1] << " ++++++ " << std::endl;
+            //            std::cout << " ++++++ " << mp.first << " : " << omni_graph.typefile[std::stoi(omni_graph.objectfile[mp.first][1])][1] << " ++++++ " << std::endl;
             for (auto &itr : mp.second)
             {
                 std::cout << itr.first << " : " << itr.second << std::endl;

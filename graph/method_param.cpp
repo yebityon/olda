@@ -11,7 +11,7 @@ namespace olda
     {
         std::map<std::string, std::string> mp = olda::parse_bytecode(method_param);
         const std::string other = mp["other"];
-        std::vector<std::string> tmp = olda::split(order, ',');
+        std::vector<std::string> tmp = olda::split(other, ',');
 
         for (int i = 0; i < tmp.size(); ++i)
         {
@@ -33,7 +33,6 @@ namespace olda
         if (isObject)
         {
             const int object_id = std::stoi(mpp["Value"]);
-
             const std::string object_hash = std::to_string(std::hash<std::string>()(omni_graph.object_order[object_id][-1]));
             param = object_hash;
         }

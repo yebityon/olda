@@ -3,29 +3,22 @@
 
 namespace olda
 {
+    const std::vector<std::string> sp_write_object_key = {};
 
     std::map<std::string, std::string>
-    _parse_write_object(const std::string write_object_log)
+    _parse_write_object(const std::string write_object_log, const std::vector<std::string> &key = {})
     {
-        std::map<std::string, std::string> res;
-        std::vector<std::string> parsed_log = olda::split(write_object_log, ',');
+        std::map<std::string, std::string> mp = olda::parse_bytecode(write_object_log);
+        const std::string other = mp["other"];
+        std::vector<std::string> tmp = olda::split(other, ',');
 
-        for (auto &inst : parsed_log)
+        //        assert(other.size() == key.size());
+
+        for (int i = 0; i < key.size(); ++i)
         {
-            // for each instruction, get detail
-            std::vector<std::string> inst_detail = olda::split(inst, '=');
-            if (inst_detail.size() < 2)
-            {
-                // No "=" in the log
-                res["other"] += " " + inst_detail.front();
-            }
-            else
-            {
-                res[inst_detail[0]] = inst_detail[1];
-            }
+            mp[key[i]] = tmp[i];
         }
-
-        return res;
+        return mp;
     }
 
     void parse_write_object(const std::string log, OmniGraph &omni_graph)
@@ -51,19 +44,18 @@ namespace olda
 
             const int var_id = std::stoi(extract_method_from_dataids(event_detail, "Var="));
             const std::string var_name = extract_method_from_dataids(event_detail, "Name=");
+            bool isObject = (wop.find("objectType") != wop.end());
 
-            if (log.find("objectType") != std::string::npos)
+            if (isObject)
             {
 
                 const int object_id = std::stoi(wop["Value"]);
                 omni_graph.local_obj.top()[var_id] = object_id;
                 omni_graph.object_order[object_id][-1] += eventType;
 
-                std::cout << log << std::endl;
                 if (is_string_type(wop["objectType"]))
                 {
                     const std::string string_in = omni_graph.stringfile[object_id];
-                    std::cout << "LOCAL_SOTRE  -> " << object_id << " " << string_in << std::endl;
                     omni_graph.object_order[object_id][-1] += omni_graph.stringfile[object_id];
                 }
                 else /*  the object is not string type */
@@ -73,7 +65,6 @@ namespace olda
             }
             else /* the variable is primitive */
             {
-
                 const std::string prim_value = wop["Value"];
                 omni_graph.local_prim.top()[var_id] = prim_value;
             }
@@ -146,11 +137,49 @@ namespace olda
             }
             else if (eventType == "PUT_INSTANCE_FIELD_BEFORE_INITIALIZATION")
             {
+                //
+                //
+                // Nothing to Do
             }
             else if (eventType == "PUT_STATIC_FIELD")
             {
+                // PUT_STATIC_FIELD is the instruction when static FIELD is stored.
+                // Therefore, It should be first instruction of these field. then,sotre this instruction to omni_graph and static_filed
+
+                // EventId=3,EventType=PUT_STATIC_FIELD,ThreadId=0,DataId=337,Value=1192,argtes:<clinit>,argtes.java:8:3
+                // EventId = 4, EventType = PUT_STATIC_FIELD, ThreadId = 0, DataId = 338, Value = 1610, argtes : <clinit>, argtes.java : 8 : 5
+
+                bool isObject = (wop.find("objectType") == wop.end());
+                const std::string owner = extract_method_from_dataids(event_detail, "Owner=");
+                const std::string fieldName = extract_method_from_dataids(event_detail, "FieldName=");
+
+                if (isObject)
+                {
+                    // TODO : cehck the array.
+
+                    if (is_string_type(wop["ojbectType"]))
+                    {
+                        const int object_id = std::stoi(wop["Value"]);
+                        const std::string str_value = omni_graph.stringfile[object_id];
+                        omni_graph.object_order[object_id][-1] += eventType;
+
+                        omni_graph.static_fields[owner][fieldName] += str_value;
+                    }
+                    else
+                    {
+                        const int object_id = std::stoi(wop["Value"]);
+                        omni_graph.object_order[object_id][-1] += eventType;
+
+                        const std::string order = omni_graph.object_order[object_id][-1];
+                        omni_graph.static_fields[owner][fieldName] += order;
+                    }
+                }
+                else
+                {
+                    const std::string prim_value = wop["Value"];
+                    omni_graph.static_fields[owner][fieldName] += prim_value;
+                }
             }
         }
     }
-
 }

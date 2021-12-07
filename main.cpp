@@ -1,7 +1,6 @@
 #include "graph/graph.hpp"
 #include "graph_diff/tree_diff.hpp"
 #include "writer/graph_writer.hpp"
-#include "test/"
 
 #define debug_flush(var) std::cout << #var "=" << var << std::endl
 
@@ -68,10 +67,14 @@ int main(int argc, char *argv[])
     olda::FileDatas origin(origin_log, origin_dir);
     olda::FileDatas target(target_log, target_dir);
 
+    std::cout << "[olda]: constructing graph....\n";
     const auto origin_graph = construct_graph(origin);
     const auto target_graph = construct_graph(target);
+    std::cout << "[olda]: DONE!!\n";
 
+    std::cout << "[olda]: calculating diff_graph....\n";
     const auto graph_diff = olda::diff(origin_graph, target_graph, opt);
+    std::cout << "[olda]: DONE!!\n";
 
     // write part.
     olda::write_graphviz(origin_graph, "origin.dotf");

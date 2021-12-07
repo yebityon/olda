@@ -55,7 +55,6 @@ namespace olda
         std::vector<std::string> param_list;
     };
 
-
     using Graph = boost::adjacency_list<boost::listS, boost::vecS, boost::bidirectionalS,
                                         method_vertex,
                                         method_edges>;
@@ -107,7 +106,7 @@ namespace olda
         std::vector<std::string> omni_log;
 
         std::map<std::string, std::vector<std::string>> method_param_list;
-
+        // { owner -> FieldName : value }
         std::map<std::string, std::map<std::string, std::string>> static_fields;
         // it must be stack... whenever call method or fuction, store all data
         std::stack<std::map<std::string, std::string>> local_fields;
@@ -150,7 +149,7 @@ namespace olda
         };
     };
     std::vector<std::string> split(const std::string s, char terminator);
-        bool is_exist(const std::vector<std::string> v, std::string log);
+    bool is_exist(const std::vector<std::string> v, std::string log);
     bool is_string_type(const std::string &log);
     bool is_primitive_type(const std::string &log);
     std::string extract_method_from_dataids(const std::string event_detail, const std::string elem);

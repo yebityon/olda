@@ -1,0 +1,31 @@
+Excluded by name filter: sun/launcher/LauncherHelper
+Weaving executed: argtes loaded from file:/Users/seong/Documents/GitHub/diffanalysis/experiment/motivationExample/
+Weaving executed: myLibrary/myObject loaded from file:/Users/seong/Documents/GitHub/diffanalysis/experiment/
+Excluded by name filter: selogger/com/fasterxml/jackson/core/io/JsonStringEncoder
+Excluded by name filter: selogger/com/fasterxml/jackson/core/io/CharTypes
+Weaving executed: myLibrary/myMath loaded from file:/Users/seong/Documents/GitHub/diffanalysis/experiment/
+Excluded by name filter: java/lang/invoke/MethodHandleImpl$AsVarargsCollector
+Excluded by name filter: java/util/Arrays$ArrayList
+Excluded by name filter: java/util/Arrays$ArrayItr
+Excluded by name filter: java/lang/invoke/BoundMethodHandle$Species_LL
+Excluded by name filter: java/lang/invoke/BoundMethodHandle$Species_LLL
+Excluded by name filter: java/lang/invoke/BoundMethodHandle$Species_LLLL
+Excluded by name filter: java/lang/invoke/BoundMethodHandle$Species_LLLLL
+Excluded by name filter: java/lang/invoke/BoundMethodHandle$Species_LLLLLL
+Excluded by name filter: java/lang/invoke/BoundMethodHandle$Species_LLLLLLL
+Excluded by name filter: java/lang/Long$LongCache
+Excluded by name filter: java/lang/invoke/MethodHandles$1
+Excluded by name filter: java/lang/invoke/BoundMethodHandle$Species_LJ
+Excluded by name filter: java/lang/invoke/BoundMethodHandle$Species_LLLLLLLL
+Excluded by name filter: java/lang/invoke/BoundMethodHandle$Species_LLLLLLLLL
+Excluded by name filter: java/util/SortedMap
+Excluded by name filter: java/util/NavigableMap
+Excluded by name filter: java/util/TreeMap
+Excluded by name filter: java/lang/invoke/LambdaFormEditor$1
+Excluded by name filter: java/util/TreeMap$Entry
+Excluded by name filter: java/util/TreeMap$EntrySet
+Excluded by name filter: java/util/TreeMap$PrivateEntryIterator
+Excluded by name filter: java/util/TreeMap$EntryIterator
+Excluded by name filter: java/util/IdentityHashMap$IdentityHashMapIterator
+Excluded by name filter: java/util/IdentityHashMap$KeyIterator
+Excluded by name filter: java/io/FileOutputStream$1
