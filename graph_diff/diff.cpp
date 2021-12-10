@@ -37,8 +37,9 @@ namespace olda
         std::vector<Graph::vertex_descriptor> path;
         for (auto &[s, t] : p)
         {
-            if ((not path.empty()) and path.back() == s)
+            if (path.empty())
             {
+                path.emplace_back(s);
             }
             else
             {
@@ -50,7 +51,6 @@ namespace olda
 
     bool is_sameVertex(const method_vertex &lhs, const method_vertex &rhs, std::map<std::string, std::string> &opt)
     {
-
         return lhs.flow_hash == rhs.flow_hash;
     };
 
@@ -70,6 +70,7 @@ namespace olda
         auto g_path = unzip_dfs_path(g_visitor.get_path());
         auto u_path = unzip_dfs_path(u_visitor.get_path());
 
+        // debug
         Graph diffGraph;
         Graph::vertex_descriptor root; // the root of diffGraph
 
@@ -84,10 +85,13 @@ namespace olda
             method_vertex gv = g[g_path[gi]];
             method_vertex uv = u[u_path[ui]];
 
-            while (gi < g_path.size() && ui < u_path.size() && is_sameVertex(gv, uv, opt))
+            while (gi < g_path.size() && ui < u_path.size() &&
+             is_sameVertex(g[g_path[gi]], u[u_path[ui]], opt))
             {
                 // Note the vertexs are alined
-
+                gv = g[g_path[gi]];
+                uv = u[u_path[ui]];
+                std::cout << gv.param_hash << " " << uv.param_hash << std::endl;
                 auto new_vertex = add_vertex(diffGraph);
                 diffGraph[new_vertex] = gv;
 
@@ -118,31 +122,37 @@ namespace olda
             // disalling here
             if (gi >= g_path.size())
             {
-
-                auto prevVertex = prevU.top();
                 for (int i = ui; i < u_path.size(); ++i)
                 {
+                    auto prevVertex = prevU.top();
                     auto new_vertex = add_vertex(diffGraph);
                     diffGraph[new_vertex] = u[u_path[i]];
-
                     Graph::edge_descriptor e;
                     bool is_inserted = false;
                     boost::tie(e, is_inserted) = add_edge(prevVertex, new_vertex, diffGraph);
+                    if(not prevU.empty()){
+                        prevU.pop();
+                    }
+                    prevU.push(u_path[i]);
                 }
             }
 
             if (ui >= u_path.size())
             {
-
-                auto prevVertex = prevG.top();
                 for (int i = gi; i < g_path.size(); ++i)
                 {
+                    auto prevVertex = prevG.top();
                     auto new_vertex = add_vertex(diffGraph);
                     diffGraph[new_vertex] = g[g_path[i]];
 
                     Graph::edge_descriptor e;
                     bool is_inserted = false;
                     boost::tie(e, is_inserted) = add_edge(prevVertex, new_vertex, diffGraph);
+                    if(not prevG.empty()){
+                        prevG.pop();
+                    }
+                    prevG.push(g_path[i]);
+
                 }
             }
             if (not(gi < g_path.size() or ui < u_path.size()))
@@ -176,14 +186,18 @@ namespace olda
                     {
                         auto u_prevVertex = prevU.top();
                         auto new_vertex = add_vertex(diffGraph);
-                        new_vertex = u_path[ui];
+                        diffGraph[new_vertex] = u[u_path[ui]];
                         Graph::edge_descriptor e;
                         bool is_inserted = false;
                         boost::tie(e, is_inserted) = add_edge(u_prevVertex, new_vertex, diffGraph);
+                        if(not prevU.empty()){
                         prevU.pop();
+                        }
                         prevU.push(new_vertex);
                         ++ui;
                     }
+                    assert(ui == u_match_idx);
+                    
                     auto g_prevVertex = prevG.top();
                     auto new_vertex = g_path[gi];
 
@@ -208,7 +222,7 @@ namespace olda
                     // same as g[g_path[gi]]
                     auto prevVertex = prevG.top();
                     auto new_vertex = add_vertex(diffGraph);
-                    new_vertex = g_path[gi];
+                    diffGraph[new_vertex] = g[g_path[gi]];
 
                     Graph::edge_descriptor e;
                     bool is_inserted = false;

@@ -42,7 +42,7 @@ namespace olda
             omni_graph.g[omni_graph.root].method_hash = mep["Hash"];
             omni_graph.g[omni_graph.root].edge_cnt += 1;
             omni_graph.g[omni_graph.root].method_str = mep["MethodFullName"];
-            omni_graph.g[omni_graph.root].weak_flow = omni_graph.context;
+            omni_graph.g[omni_graph.root].flow_str = omni_graph.context;
             caller.push(mep);
             vertex_stack.push(omni_graph.root);
             return;
@@ -57,8 +57,8 @@ namespace olda
         // update current information
         omni_graph.g[to].method_hash = mep["hash"];
         omni_graph.g[to].method_str = current_method_name;
-        omni_graph.g[to].weak_flow = omni_graph.context;
-        omni_graph.g[to].weak_hash = std::hash<std::string>()(omni_graph.context);
+        omni_graph.g[to].flow_str = omni_graph.context;
+        omni_graph.g[to].flow_hash = std::hash<std::string>()(omni_graph.context);
         omni_graph.g[from].edge_cnt += 1;
 
         // generete edge

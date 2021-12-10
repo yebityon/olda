@@ -39,19 +39,13 @@ namespace olda
 
         std::string flow_str;
         std::size_t flow_hash;
-
-        std::string value_str;
-        std::size_t value_hash;
-
+        
         std::string output_format;
         // id is unique number for specific method.
         // Note that som
         int id = 0;
         int edge_cnt = 0;
-
-        std::string weak_flow;
-        std::size_t weak_hash;
-
+        
         std::vector<std::string> param_list;
     };
 
