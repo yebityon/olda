@@ -59,7 +59,7 @@ namespace olda
 
         Graph &g = origin.g;
         Graph &u = target.g;
-        
+
         size_t edge_g_cnt = 0, edge_u_cnt = 0;
 
         // get the path from boost::dfs
@@ -73,7 +73,8 @@ namespace olda
         auto u_path = unzip_dfs_path(u_visitor.get_path());
 
         // debug
-        for(auto& p : g_path){
+        for (auto &p : g_path)
+        {
             std::cout << g[p].method_str << " -> ";
         }
         std::cout << std::endl;
@@ -92,7 +93,7 @@ namespace olda
             method_vertex uv = u[u_path[ui]];
 
             while (gi < g_path.size() && ui < u_path.size() &&
-             is_sameVertex(g[g_path[gi]], u[u_path[ui]], opt))
+                   is_sameVertex(g[g_path[gi]], u[u_path[ui]], opt))
             {
                 // Note the vertexs are alined
                 gv = g[g_path[gi]];
@@ -138,7 +139,8 @@ namespace olda
                     bool is_inserted = false;
                     boost::tie(e, is_inserted) = add_edge(prevVertex, new_vertex, diffGraph);
                     diffGraph[e].cost = edge_u_cnt++;
-                    if(not prevU.empty()){
+                    if (not prevU.empty())
+                    {
                         prevU.pop();
                     }
                     prevU.push(u_path[i]);
@@ -163,7 +165,6 @@ namespace olda
                         prevG.pop();
                     }
                     prevG.push(g_path[i]);
-
                 }
                 break;
             }
@@ -203,21 +204,21 @@ namespace olda
                         bool is_inserted = false;
                         boost::tie(e, is_inserted) = add_edge(u_prevVertex, new_vertex, diffGraph);
                         diffGraph[e].cost = edge_u_cnt++;
-                        
-                        if(not prevU.empty()){
+
+                        if (not prevU.empty())
+                        {
                             prevU.pop();
                         }
                         prevU.push(new_vertex);
                         ++ui;
                     }
                     assert(ui == u_match_idx);
-                    
-                    
+
                     auto g_prevVertex = prevG.top();
                     auto new_vertex = add_vertex(diffGraph);
 
-                    diffGraph[new_vertex]  = g[g_path[gi]];
-                    
+                    diffGraph[new_vertex] = g[g_path[gi]];
+
                     Graph::edge_descriptor e;
                     bool is_inserted = false;
                     boost::tie(e, is_inserted) = add_edge(g_prevVertex, new_vertex, diffGraph);
@@ -256,4 +257,136 @@ namespace olda
 
         return diffGraph;
     }
-}
+
+    Graph easy_diff(const Graph&g, const Graph&u, std::map<std::string, std::string> &opt)
+    {
+        std::cout << "easy_diff is called....!!\n" << std::endl;
+
+        size_t edge_g_cnt = 0, edge_u_cnt = 0;
+
+        auto g_visitor = my_visitor();
+        auto u_visitor = my_visitor();
+
+        boost::depth_first_search(g, boost::visitor(g_visitor));
+        std::cout << "g_dfs has been finished....!" << std::endl;
+        boost::depth_first_search(u, boost::visitor(u_visitor));
+        std::cout << "u_dfs has been finished....!" << std::endl;
+
+        auto g_path = unzip_dfs_path(g_visitor.get_path());
+        auto u_path = unzip_dfs_path(u_visitor.get_path());
+
+        // debug
+        Graph diffGraph;
+        Graph::vertex_descriptor root; // the root of diffGraph
+
+        std::vector<std::vector<Graph::vertex_descriptor>> pathDiff;
+        std::stack<Graph::vertex_descriptor> prevG, prevU; // the stack of vertex of G and U
+
+        int gi = 0, ui = 0;
+
+        while (gi < g_path.size() && ui < u_path.size())
+        {
+            while (gi < g_path.size() && ui < u_path.size() &&
+                   is_sameVertex(g[g_path[gi]], u[u_path[ui]], opt))
+            {
+                // Note the vertexs are alined
+                auto gv = g[g_path[gi]];
+                auto uv = u[u_path[ui]];
+
+                auto new_vertex = add_vertex(diffGraph);
+                diffGraph[new_vertex] = gv;
+
+                if (prevG.empty())
+                {
+                    // No need to connect
+                }
+                else
+                {
+                    auto prevVertex = prevG.top();
+                    Graph::edge_descriptor e;
+                    bool is_inserted = false;
+                    boost::tie(e, is_inserted) = add_edge(prevVertex, new_vertex, diffGraph);
+                    diffGraph[e].cost = edge_g_cnt++;
+                }
+                if (not prevG.empty())
+                {
+                    prevG.pop();
+                }
+                if (not prevU.empty())
+                {
+                    prevU.pop();
+                }
+                gi++;
+                ui++;
+                prevG.push(new_vertex);
+                prevU.push(new_vertex);
+            }
+            // disalling here
+            if (gi >= g_path.size())
+            {
+                for (int i = ui; i < u_path.size(); ++i)
+                {
+                    auto prevVertex = prevU.top();
+                    auto new_vertex = add_vertex(diffGraph);
+                    diffGraph[new_vertex] = u[u_path[i]];
+                    Graph::edge_descriptor e;
+                    bool is_inserted = false;
+                    boost::tie(e, is_inserted) = add_edge(prevVertex, new_vertex, diffGraph);
+                    diffGraph[e].cost = edge_u_cnt++;
+                    if (not prevU.empty())
+                    {
+                        prevU.pop();
+                    }
+                    prevU.push(u_path[i]);
+                }
+                break;
+            }
+
+            if (ui >= u_path.size())
+            {
+                for (int i = gi; i < g_path.size(); ++i)
+                {
+                    auto prevVertex = prevG.top();
+                    auto new_vertex = add_vertex(diffGraph);
+                    diffGraph[new_vertex] = g[g_path[i]];
+
+                    Graph::edge_descriptor e;
+                    bool is_inserted = false;
+                    boost::tie(e, is_inserted) = add_edge(prevVertex, new_vertex, diffGraph);
+                    diffGraph[e].cost = edge_g_cnt++;
+                    if (not prevG.empty())
+                    {
+                        prevG.pop();
+                    }
+                    prevG.push(g_path[i]);
+                }
+                break;
+            }
+            if (gi >= g_path.size() and ui >= u_path.size())
+            {
+                // all vertexs are itereated.
+                break;
+            }
+            // different hash vertex are detected !!
+            auto prevVertex = prevG.top();
+            auto new_vertex = add_vertex(diffGraph);
+            diffGraph[new_vertex] = g[g_path[gi]];
+
+            Graph::edge_descriptor e;
+            bool is_inserted = false;
+            boost::tie(e, is_inserted) = add_edge(prevVertex, new_vertex, diffGraph);
+            diffGraph[e].cost = edge_g_cnt++;
+            prevG.push(new_vertex);
+
+            prevVertex = prevU.top();
+            new_vertex = add_vertex(diffGraph);
+            diffGraph[new_vertex] = u[u_path[ui]];
+
+            boost::tie(e, is_inserted) = add_edge(prevVertex, new_vertex, diffGraph);
+            diffGraph[e].cost = edge_u_cnt++;
+            prevU.push(new_vertex);
+            break;
+        };
+        return diffGraph;
+    }
+} // namespace old
