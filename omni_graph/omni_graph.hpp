@@ -129,6 +129,8 @@ namespace olda
         std::vector<std::vector<std::string>> objectfile;
         // object_id -> value
         std::map<int, std::string> stringfile;
+
+        std::vector<Graph::vertex_descriptor>path;
         inline void setFileData(FileDatas fd)
         {
             omni_log = fd.omni_log;
