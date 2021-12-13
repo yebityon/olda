@@ -1,0 +1,33 @@
+version: '3'
+services:
+  java7:
+    restart: always
+    build: ./dockerfiles/java7/
+    image: 'olda/java7'
+    container_name: 'olda_java7'
+    working_dir: '/root/'
+    tty: true
+    volumes:
+      - ./server:/root/server:cached
+  java8:
+    restart: always
+    build: ./dockerfiles/java8/
+    image: 'olda/java8'
+    container_name: 'olda_java8'
+    working_dir: '/root/'
+    tty: true
+    volumes:
+      - ./server:/root/server:cached
+    
+  gcc8:
+    restart: always
+    build: ./dockerfiles/gcc8/
+    image: 'olda/gcc8'
+    container_name: 'olda_gcc8'
+    working_dir: '/root/'
+    tty: true
+    volumes:
+      - ./olda:/root/olda:cached
+      
+  
+
