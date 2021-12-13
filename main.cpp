@@ -95,10 +95,13 @@ int main(int argc, char *argv[])
 
     std::cout << "[olda]: calculating diff_graph....";
     
-    const auto graph_diff = olda::diff(origin_graph, target_graph, opt);
+    //    const auto graph_diff = olda::diff(origin_graph, target_graph, opt);
+    const auto graph_diff = olda::easy_diff(origin_graph, target_graph, opt);
+
     std::cout << " DONE!!\n";
     
     std::cout << "[olda]: writing diff tree....";
     olda::write_diffGraph(graph_diff, "./target/diff.dot");
     std::cout << " DONE!!\n";
+    std::cout << "[olda]: success fully finish!!" << std::endl;
 }

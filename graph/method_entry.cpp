@@ -45,6 +45,8 @@ namespace olda
             omni_graph.g[omni_graph.root].flow_str = omni_graph.context;
             caller.push(mep);
             vertex_stack.push(omni_graph.root);
+            omni_graph.path.emplace_back(omni_graph.root);
+            
             return;
         }
 
@@ -68,6 +70,8 @@ namespace olda
         omni_graph.g[e].from = prev_method_name;
         omni_graph.g[e].to = current_method_name;
         omni_graph.g[e].cost = omni_graph.g[from].edge_cnt;
+
+        omni_graph.path.emplace_back(to);
         
         caller.push(mep);
         vertex_stack.push(to);

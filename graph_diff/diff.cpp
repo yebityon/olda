@@ -66,11 +66,15 @@ namespace olda
         auto g_visitor = my_visitor();
         auto u_visitor = my_visitor();
 
-        boost::depth_first_search(g, boost::visitor(g_visitor));
-        boost::depth_first_search(u, boost::visitor(u_visitor));
+        // boost::depth_first_search(g, boost::visitor(g_visitor));
+        // boost::depth_first_search(u, boost::visitor(u_visitor));
 
-        auto g_path = unzip_dfs_path(g_visitor.get_path());
-        auto u_path = unzip_dfs_path(u_visitor.get_path());
+        // auto g_path = unzip_dfs_path(g_visitor.get_path());
+        // auto u_path = unzip_dfs_path(u_visitor.get_path());
+        
+        auto& g_path = origin.path;
+        auto& u_path = target.path;
+        
 
         // debug
         for (auto &p : g_path)
@@ -258,7 +262,7 @@ namespace olda
         return diffGraph;
     }
 
-    Graph easy_diff(const Graph&g, const Graph&u, std::map<std::string, std::string> &opt)
+    Graph easy_diff(OmniGraph origin, OmniGraph target, std::map<std::string, std::string> &opt)
     {
         std::cout << "easy_diff is called....!!\n" << std::endl;
 
@@ -267,14 +271,21 @@ namespace olda
         auto g_visitor = my_visitor();
         auto u_visitor = my_visitor();
 
-        boost::depth_first_search(g, boost::visitor(g_visitor));
-        std::cout << "g_dfs has been finished....!" << std::endl;
-        boost::depth_first_search(u, boost::visitor(u_visitor));
-        std::cout << "u_dfs has been finished....!" << std::endl;
+        // boost::depth_first_search(g, boost::visitor(g_visitor));
+        // std::cout << "g_dfs has been finished....!" << std::endl;
+        // boost::depth_first_search(u, boost::visitor(u_visitor));
+        // std::cout << "u_dfs has been finished....!" << std::endl;
 
-        auto g_path = unzip_dfs_path(g_visitor.get_path());
-        auto u_path = unzip_dfs_path(u_visitor.get_path());
+        // auto g_path = unzip_dfs_path(g_visitor.get_path());
+        // auto u_path = unzip_dfs_path(u_visitor.get_path());
 
+        auto &g_path = origin.path;
+        auto &u_path = target.path;
+
+        Graph &g = origin.g;
+        Graph &u = target.g;
+
+        std::cout << "Getthing the path is end..." << std::endl;
         // debug
         Graph diffGraph;
         Graph::vertex_descriptor root; // the root of diffGraph
@@ -289,6 +300,7 @@ namespace olda
             while (gi < g_path.size() && ui < u_path.size() &&
                    is_sameVertex(g[g_path[gi]], u[u_path[ui]], opt))
             {
+            std::cout << gi << ":" << g_path.size() << " " << (gi * 100 / g_path.size() )<< "% " << std::endl;
                 // Note the vertexs are alined
                 auto gv = g[g_path[gi]];
                 auto uv = u[u_path[ui]];

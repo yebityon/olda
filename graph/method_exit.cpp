@@ -41,6 +41,14 @@ namespace olda
         {
             std::cout << "Assertion failed:";
             std::cout << caller_top["MethodFullName"] << " " << mep["MethodFullName"] << std::endl;
+            // something Invalid. Skip the vertex
+            caller.pop();
+            vertex_stack.pop();
+            omni_graph.local_fields.pop();
+            omni_graph.local_prim.pop();
+            omni_graph.local_obj.pop();
+
+            return;
         };
 
 
@@ -79,6 +87,13 @@ namespace olda
         // pop the method information.
         caller.pop();
         vertex_stack.pop();
+         
+        // method_exit meaning that 
+        
+        if(not vertex_stack.empty()){
+            omni_graph.path.push_back(vertex_stack.top());
+        }
+        
         omni_graph.local_fields.pop();
         omni_graph.local_prim.pop();
         omni_graph.local_obj.pop();
