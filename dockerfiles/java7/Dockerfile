@@ -20,7 +20,8 @@ RUN apt-get install -y \
                 cpanminus \
                 make \
                 locales \
-                && \
+                maven \
+  && \
   rm -rf /var/lib/apt/lists/*
 
 # Java version

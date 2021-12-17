@@ -84,6 +84,9 @@ namespace olda
             {
                 this->string_filename = path.string();
             }
+            else if(path.string().find("LOG$Exceptions") != std::string::npos){
+                // read excecptions file
+            }
         }
         this->typefile = this->typefile_parser(this->type_filename);
         this->objectfile = this->objectfile_parser(this->object_filename);

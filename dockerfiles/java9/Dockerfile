@@ -48,7 +48,8 @@ RUN \
         unzip \
         cpanminus \
         make \
-        locales \
+        maven \
+    locales \
                 && \
   rm -rf /var/lib/apt/lists/*
 

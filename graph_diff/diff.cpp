@@ -51,7 +51,7 @@ namespace olda
 
     bool is_sameVertex(const method_vertex &lhs, const method_vertex &rhs, std::map<std::string, std::string> &opt)
     {
-        return lhs.flow_hash == rhs.flow_hash;
+        return lhs.param_hash == rhs.param_hash;
     };
 
     Graph diff(OmniGraph origin, OmniGraph target, std::map<std::string, std::string> &opt)
@@ -271,21 +271,18 @@ namespace olda
         auto g_visitor = my_visitor();
         auto u_visitor = my_visitor();
 
-        // boost::depth_first_search(g, boost::visitor(g_visitor));
-        // std::cout << "g_dfs has been finished....!" << std::endl;
-        // boost::depth_first_search(u, boost::visitor(u_visitor));
-        // std::cout << "u_dfs has been finished....!" << std::endl;
-
-        // auto g_path = unzip_dfs_path(g_visitor.get_path());
-        // auto u_path = unzip_dfs_path(u_visitor.get_path());
-
         auto &g_path = origin.path;
         auto &u_path = target.path;
+        
+        std::reverse(g_path.begin(),g_path.end());
+        std::reverse(u_path.begin(),u_path.end());
+        
 
         Graph &g = origin.g;
         Graph &u = target.g;
 
         std::cout << "Getthing the path is end..." << std::endl;
+        std::cout << "g_path" << " " << g_path.size() << " " << "u_path " << u_path.size() << std::endl;
         // debug
         Graph diffGraph;
         Graph::vertex_descriptor root; // the root of diffGraph
@@ -300,7 +297,7 @@ namespace olda
             while (gi < g_path.size() && ui < u_path.size() &&
                    is_sameVertex(g[g_path[gi]], u[u_path[ui]], opt))
             {
-            std::cout << gi << ":" << g_path.size() << " " << (gi * 100 / g_path.size() )<< "% " << std::endl;
+             std::cout << gi << ":" << g_path.size() << " " << (gi * 100 / g_path.size() )<< "% " << std::endl;
                 // Note the vertexs are alined
                 auto gv = g[g_path[gi]];
                 auto uv = u[u_path[ui]];

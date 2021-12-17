@@ -27,7 +27,7 @@ services:
     working_dir: '/root/'
     tty: true
     volumes:
-      - ./olda:/root/olda:cached
+      - .:/root/olda:cached
       
   
 

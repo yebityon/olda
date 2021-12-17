@@ -5,7 +5,7 @@ OPENSSL_LIB = -L/usr/local/opt/openssl@1.1/lib -lcrypto
 
 
 
-SRC = ~/Documents/Github/olda
+SRC = .
 
 all: $(SRC)/main.cpp $(SRC)/graph/*.cpp $(SRC)/omni_graph/*.cpp
 
