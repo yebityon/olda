@@ -54,11 +54,12 @@ namespace olda
         return lhs.param_hash == rhs.param_hash;
     };
 
-    size_t get_hash(const method_vertex &v, std::map<std::string, std::string> &opt){
+    size_t get_hash(const method_vertex &v, std::map<std::string, std::string> &opt)
+    {
         return v.flow_hash;
     }
 
-        Graph diff(OmniGraph origin, OmniGraph target, std::map<std::string, std::string> &opt)
+    Graph diff(OmniGraph origin, OmniGraph target, std::map<std::string, std::string> &opt)
     {
 
         Graph &g = origin.g;
@@ -281,21 +282,22 @@ namespace olda
 
         auto &g_path = origin.path;
         auto &u_path = target.path;
-        
+
         std::reverse(g_path.begin(), g_path.end());
         std::reverse(u_path.begin(), u_path.end());
-        
 
         Graph diffGraph;
         Graph::vertex_descriptor root;
-        
+
         std::stack<Graph::vertex_descriptor> preV;
-        
+
         size_t idx = 0;
-        
-        while(idx < std::min(g_path.size(), u_path.size())){
-            
-            if( not is_sameVertex(g[g_path[idx]],u[u_path[idx]],opt)){
+
+        while (idx < std::min(g_path.size(), u_path.size()))
+        {
+
+            if (not is_sameVertex(g[g_path[idx]], u[u_path[idx]], opt))
+            {
 
                 auto new_vertex = add_vertex(diffGraph);
                 diffGraph[new_vertex] = g[g_path[idx]];
@@ -324,17 +326,17 @@ namespace olda
             }
             else
             {
-                //same vertex 
+                // same vertex
                 auto new_vertex = add_vertex(diffGraph);
                 diffGraph[new_vertex] = g[g_path[idx]];
-                
-                if(not preV.empty()){
+
+                if (not preV.empty())
+                {
                     auto pv = preV.top();
                     preV.pop();
                     Graph::edge_descriptor e;
                     bool is_inserted = false;
                     boost::tie(e, is_inserted) = add_edge(pv, new_vertex, diffGraph);
-                    
                 }
                 preV.push(new_vertex);
             }
@@ -483,8 +485,9 @@ namespace olda
         return diffGraph;
     }
 
-    Graph backward_diff(OmniGraph origin, OmniGraph target, std::map<std::string, std::string> &opt){
-        
+    Graph backward_diff(OmniGraph origin, OmniGraph target, std::map<std::string, std::string> &opt)
+    {
+
         std::cout << "backward_diff is called." << std::endl;
         size_t edge_g_cnt = 0, edge_u_cnt = 0;
 
@@ -492,7 +495,7 @@ namespace olda
         Graph &u = target.g;
         auto &g_path = origin.path;
         auto &u_path = target.path;
-        
+
         std::reverse(g_path.begin(), g_path.end());
         std::reverse(u_path.begin(), u_path.end());
 
@@ -501,41 +504,60 @@ namespace olda
 
         std::stack<Graph::vertex_descriptor> preV;
 
-        std:map<size_t, Graph::vertex_descriptor> hash_memo;
-        
+        std::map<size_t, Graph::vertex_descriptor> hash_memo;
+
         Graph::vertex_iterator bgn, lst;
-        
-        // recored all hash value of vertex 
-        for (boost::tie(bgn, lst) = vertices(g); beg != end; beg++)
+
+        // recored all hash value of vertex
+        for (boost::tie(bgn, lst) = vertices(g); bgn != lst; bgn++)
         {
-            hash_memo[get_hash(*bgn)] = *bgn;
+            hash_memo[get_hash(g[*bgn], opt)] = *bgn;
         }
-        
-        for(auto& p : u_path){
-            auto v =u[p];
-            if( hash_memo.find(get_hash(v)) != hash_memo.end())){
-                
+
+        for (auto &p : u_path)
+        {
+            auto v = u[p];
+            if (hash_memo.find(get_hash(v, opt)) != hash_memo.end())
+            {
+
                 auto new_vertex = add_vertex(diffGraph);
                 diffGraph[new_vertex] = v;
 
-                if(not preV.empty()){
+                if (not preV.empty())
+                {
                     auto pv = preV.top();
                     preV.pop();
-                    
+
                     Graph::edge_descriptor e;
                     bool is_inserted = false;
-                    
-                    boost::tie(e, is_inserted) = 
+
+                    boost::tie(e, is_inserted) = add_edge(pv, p, diffGraph);
                 }
-                
-                preV.push(v);
-            } else {
-                // same vertices 
-                
+                preV.push(p);
+            }
+            else
+            {
+                if(not preV.empty())
+                {
+                    auto hash = get_hash(v,opt);
+                    auto gv = hash_memo[hash];
+                    
+                    auto pv = preV.top();
+                    
+                    auto new_vertex = add_vertex(diffGraph);
+                    diffGraph[new_vertex] = g[gv];
+                    Graph::edge_descriptor e; bool is_inserted = false;
+                    boost::tie(e,is_inserted) = add_edge(pv, new_vertex,diffGraph);
+
+                    new_vertex = add_vertex(diffGraph);
+                    diffGraph[new_vertex] = u[p];
+                    is_inserted = false;
+                    boost::tie(e, is_inserted) = add_edge(pv, new_vertex, diffGraph);
+                }
+                break;
             }
         }
 
         return diffGraph;
-        
     }
 } // namespace old
