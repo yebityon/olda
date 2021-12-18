@@ -33,12 +33,20 @@ namespace olda
         // method hash is the hash of method
         std::string method_str;
         std::string method_hash;
-        //
+        
+        // param str has param value, the hash value of object 
         std::string param_str;
         std::size_t param_hash;
 
+
+        // flow hash is the flow of inside of the method 
         std::string flow_str;
         std::size_t flow_hash;
+
+        /*
+         * context hash is the flow hash of the parent hash.
+        */
+        std::size_t context_hash;
         
         std::string output_format;
         // id is unique number for specific method.

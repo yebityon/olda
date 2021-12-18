@@ -36,13 +36,13 @@ namespace olda
 
         if (caller.empty())
         {
-            // if the caller is empty, it indicate that this vertex is Main
+            // if the caller is empty, it indicate that this is the initial method.
 
             omni_graph.root = add_vertex(omni_graph.g);
             omni_graph.g[omni_graph.root].method_hash = mep["Hash"];
             omni_graph.g[omni_graph.root].edge_cnt += 1;
             omni_graph.g[omni_graph.root].method_str = mep["MethodFullName"];
-            omni_graph.g[omni_graph.root].flow_str = omni_graph.context;
+            omni_graph.g[omni_graph.root].flow_str = "";
             caller.push(mep);
             vertex_stack.push(omni_graph.root);
             omni_graph.path.emplace_back(omni_graph.root);
@@ -56,11 +56,20 @@ namespace olda
 
         std::string prev_method_name = prev_method["MethodFullName"];
         std::string current_method_name = mep["MethodFullName"];
+        
         // update current information
-        omni_graph.g[to].method_hash = mep["hash"];
+        omni_graph.g[to].method_hash = mep["Hash"];
         omni_graph.g[to].method_str = current_method_name;
         omni_graph.g[to].flow_str = omni_graph.context;
-        omni_graph.g[to].flow_hash = std::hash<std::string>()(omni_graph.context);
+        // Note : previous method exsit.
+        omni_graph.g[to].context_hash = omni_graph.g[from].flow_hash;
+        
+        // Init flow str.
+        omni_graph.g[to].flow_str = "";
+        
+        // Init method hash 
+        omni_graph.g[to].method_str = "";
+        
         omni_graph.g[from].edge_cnt += 1;
 
         // generete edge

@@ -8,6 +8,10 @@
 #include <string>
 #include <vector>
 
+inline void progress(const std::string message){
+    std::cout << "\r" << "[olda]: " << message << std::string(' ',50);
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -64,17 +68,16 @@ int main(int argc, char *argv[])
     debug_flush(opt["flow"]);
     debug_flush(opt["value"]);
 
-    printf("%s", "[olda]: analyzing metafile....");
+    progress("analyzing metafile....");
     olda::FileDatas origin(origin_log, origin_dir);
     olda::FileDatas target(target_log, target_dir);
     std::cout << "DONE!!\n";
 
     //===================== ORIGIN GRAPH ======================
-    std::cout << "[olda]: constructing origin graph....";
+    progress("constructing origin graph....");
     const auto origin_graph = construct_graph(origin);
-    std::cout << "DONE!" << std::endl;
 
-    std::cout << "[olda]: writing origin tree file....";
+    progress("writing origin tree file....");
     olda::write_graphviz(origin_graph, "./target/origin.dot");
     std::cout << "DONE!" << std::endl;
 
@@ -86,7 +89,7 @@ int main(int argc, char *argv[])
     std::cout << "[olda]: constructing target graph....";
     const auto target_graph = construct_graph(target);
     std::cout << " DONE!!\n";
-
+    
     std::cout << "[olda]: writing target tree file...";
     olda::write_graphviz(target_graph, "./target/target.dot");
     std::cout << " DONE!!\n";

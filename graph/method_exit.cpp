@@ -81,8 +81,12 @@ namespace olda
             std::to_string(return_hash),
             [](auto &lhs, auto &rhs)
             { return lhs + rhs; }));
+        
+        const size_t flow_hash = std::hash<std::string>()(omni_graph.g[vertex_stack.top()].flow_str);
 
         omni_graph.g[vertex_stack.top()].param_hash = param_hash;
+        omni_graph.g[vertex_stack.top()].flow_hash = flow_hash;
+        
 
         // pop the method information.
         caller.pop();

@@ -29,7 +29,7 @@ namespace olda
             if (cnt * 100 / filisize > crt_progress)
             {
                 crt_progress = cnt * 100 / filisize;
-                std::cout << crt_progress << "%" << std::endl;
+                std::cout << "\r" << crt_progress << "%" << std::string(' ', 15);
             }
 
             const std::string eventType = olda::parse_bytecode(log)["EventType"];
@@ -85,24 +85,30 @@ namespace olda
 
                 if (vertex_stack.empty())
                     continue;
-                omni_graph.g[vertex_stack.top()].flow_str += log;
+                auto parsed_log = olda::split(log,',');
+                parsed_log.back() = parsed_log.back().substr(0,parsed_log.back().find(':'));
+                std::string emp = "";
+                std::string flow_str = "";
+                flow_str += std::accumulate(parsed_log.begin(), parsed_log.end(), emp);
+
+                omni_graph.g[vertex_stack.top()].flow_str  = flow_str;
             }
         }
 
-        std::cout << "=================== DEBUG ======================" << std::endl;
+        // std::cout << "=================== DEBUG ======================" << std::endl;
 
-        std::cout << " **************** object_order *****************" << std::endl;
-        for (auto &mp : omni_graph.object_order)
-        {
-            //            std::cout << " ++++++ " << mp.first << " : " << omni_graph.typefile[std::stoi(omni_graph.objectfile[mp.first][1])][1] << " ++++++ " << std::endl;
-            for (auto &itr : mp.second)
-            {
-                std::cout << itr.first << " : " << itr.second << std::endl;
-            }
-        }
-        std::cout << " **************** object_order *****************" << std::endl;
+        // std::cout << " **************** object_order *****************" << std::endl;
+        // for (auto &mp : omni_graph.object_order)
+        // {
+        //     //            std::cout << " ++++++ " << mp.first << " : " << omni_graph.typefile[std::stoi(omni_graph.objectfile[mp.first][1])][1] << " ++++++ " << std::endl;
+        //     for (auto &itr : mp.second)
+        //     {
+        //         std::cout << itr.first << " : " << itr.second << std::endl;
+        //     }
+        // }
+        // std::cout << " **************** object_order *****************" << std::endl;
 
-        std::cout << "=================== END  ====================" << std::endl;
+        // std::cout << "=================== END  ====================" << std::endl;
 
         return omni_graph;
     }
