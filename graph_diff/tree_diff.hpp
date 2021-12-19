@@ -4,4 +4,5 @@ namespace olda
 {
     Graph diff(OmniGraph origin, OmniGraph target, std::map<std::string, std::string> & opt);
     Graph easy_diff(OmniGraph origin, OmniGraph target, std::map<std::string, std::string> & opt);
+    Graph backward_diff(OmniGraph origin, OmniGraph target, std::map<std::string, std::string> &opt);
 }

@@ -67,9 +67,6 @@ namespace olda
         // Init flow str.
         omni_graph.g[to].flow_str = "";
         
-        // Init method hash 
-        omni_graph.g[to].method_str = "";
-        
         omni_graph.g[from].edge_cnt += 1;
 
         // generete edge

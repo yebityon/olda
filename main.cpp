@@ -32,9 +32,13 @@ int main(int argc, char *argv[])
         {
             opt["flow"] = "valid";
         }
-        else if (arg == "--value")
+        else if (arg == "--param")
         {
-            opt["value"] = "valid";
+            opt["param"] = "valid";
+        }
+        else if(arg == "--context")
+        {
+            opt["context"] = "valid";
         }
         else if (arg.find("--") != std::string::npos)
         {
@@ -66,7 +70,8 @@ int main(int argc, char *argv[])
     debug_flush(target_dir);
 
     debug_flush(opt["flow"]);
-    debug_flush(opt["value"]);
+    debug_flush(opt["param"]);
+    debug_flush(opt["context"]);
 
     progress("analyzing metafile....");
     olda::FileDatas origin(origin_log, origin_dir);
@@ -99,7 +104,7 @@ int main(int argc, char *argv[])
     std::cout << "[olda]: calculating diff_graph....";
     
     //    const auto graph_diff = olda::diff(origin_graph, target_graph, opt);
-    const auto graph_diff = olda::easy_diff(origin_graph, target_graph, opt);
+    const auto graph_diff = olda::backward_diff(origin_graph, target_graph, opt);
 
     std::cout << " DONE!!\n";
     

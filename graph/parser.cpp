@@ -19,6 +19,7 @@ namespace olda
         {
             omni_graph.object_order[object_id][-1] = str;
         }
+        
         int filisize = omni_graph.omni_log.size();
         int crt_progress = 0;
         long long cnt = 0;
@@ -29,7 +30,7 @@ namespace olda
             if (cnt * 100 / filisize > crt_progress)
             {
                 crt_progress = cnt * 100 / filisize;
-                std::cout << "\r" << crt_progress << "%" << std::string(' ', 15);
+                std::cout << crt_progress << "%" << std::endl;
             }
 
             const std::string eventType = olda::parse_bytecode(log)["EventType"];
@@ -94,8 +95,6 @@ namespace olda
                 omni_graph.g[vertex_stack.top()].flow_str  = flow_str;
             }
         }
-
-        // std::cout << "=================== DEBUG ======================" << std::endl;
 
         // std::cout << " **************** object_order *****************" << std::endl;
         // for (auto &mp : omni_graph.object_order)

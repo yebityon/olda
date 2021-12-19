@@ -51,12 +51,22 @@ namespace olda
 
     bool is_sameVertex(const method_vertex &lhs, const method_vertex &rhs, std::map<std::string, std::string> &opt)
     {
-        return lhs.param_hash == rhs.param_hash;
+        if (opt.find("param") != opt.end())
+            return lhs.param_hash == rhs.param_hash;
+        if (opt.find("flow") != opt.end())
+            return lhs.flow_hash == rhs.flow_hash;
+        if (opt.find("context") != opt.end())
+            return lhs.context_hash == rhs.context_hash;
     };
 
     size_t get_hash(const method_vertex &v, std::map<std::string, std::string> &opt)
     {
-        return v.flow_hash;
+        if(opt.find("param") != opt.end())
+            return v.param_hash;
+        if(opt.find("flow") != opt.end())
+            return v.flow_hash;
+        if(opt.find("context") != opt.end())
+            return v.context_hash;
     }
 
     Graph diff(OmniGraph origin, OmniGraph target, std::map<std::string, std::string> &opt)
@@ -489,6 +499,7 @@ namespace olda
     {
 
         std::cout << "backward_diff is called." << std::endl;
+        
         size_t edge_g_cnt = 0, edge_u_cnt = 0;
 
         Graph &g = origin.g;
@@ -511,15 +522,19 @@ namespace olda
         // recored all hash value of vertex
         for (boost::tie(bgn, lst) = vertices(g); bgn != lst; bgn++)
         {
+            if( hash_memo[get_hash(g[*bgn],opt)] != hash_memo.end())
+            {
+                std::cout << " ======= same vertex exist ======== " << std::endl;
+            }
             hash_memo[get_hash(g[*bgn], opt)] = *bgn;
         }
 
         for (auto &p : u_path)
         {
             auto v = u[p];
-            if (hash_memo.find(get_hash(v, opt)) != hash_memo.end())
+            if (hash_memo.find(get_hash(v, opt)) != hash_memo.end() && 
+                g[(hash_memo.find(get_hash(v,opt)))->first].method_str == v.method_str)
             {
-
                 auto new_vertex = add_vertex(diffGraph);
                 diffGraph[new_vertex] = v;
 
@@ -531,33 +546,53 @@ namespace olda
                     Graph::edge_descriptor e;
                     bool is_inserted = false;
 
-                    boost::tie(e, is_inserted) = add_edge(pv, p, diffGraph);
+                    boost::tie(e, is_inserted) = add_edge(pv, new_vertex, diffGraph);
                 }
-                preV.push(p);
+                preV.push(new_vertex);
             }
             else
             {
-                if(not preV.empty())
-                {
-                    auto hash = get_hash(v,opt);
-                    auto gv = hash_memo[hash];
-                    
-                    auto pv = preV.top();
-                    
-                    auto new_vertex = add_vertex(diffGraph);
-                    diffGraph[new_vertex] = g[gv];
-                    Graph::edge_descriptor e; bool is_inserted = false;
-                    boost::tie(e,is_inserted) = add_edge(pv, new_vertex,diffGraph);
+                auto new_vertex = add_vertex(diffGraph);
+                diffGraph[new_vertex] = v;
 
-                    new_vertex = add_vertex(diffGraph);
-                    diffGraph[new_vertex] = u[p];
-                    is_inserted = false;
+                if (not preV.empty())
+                {
+                    auto pv = preV.top();
+                    preV.pop();
+
+                    Graph::edge_descriptor e;
+                    bool is_inserted = false;
+
                     boost::tie(e, is_inserted) = add_edge(pv, new_vertex, diffGraph);
                 }
+                
+                auto same_hash_gv = add_vertex(diffGraph);
+                diffGraph[same_hash_gv] = g[hash_memo[get_hash(v,opt)]];
+
+                std::cout << g[hash_memo[get_hash(v, opt)]].method_str << " " << v.method_str << " has same verticies !!" << std::endl;
+
+                    Graph::edge_descriptor e;
+                bool  is_inserted = false;
+                
+                boost::tie(e,is_inserted) = add_edge(new_vertex,same_hash_gv,diffGraph);
+                diffGraph[e].cost = 12345;
+                
                 break;
             }
         }
-
+        
+        for(auto& p : u_path)
+        {
+            if(hash_memo.find(get_hash(u[p], opt)) != hash_memo.end())
+            {
+                auto str = u[p].method_str;
+                if(str.find("ant") == std::string::npos  && str.find("junit") == std::string::npos)
+                {
+                    std::cout << u[p].method_str << " ->";
+                }
+            }   
+        }
+        std::cout << std::endl;
         return diffGraph;
     }
 } // namespace old
