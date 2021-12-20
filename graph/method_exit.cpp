@@ -82,7 +82,9 @@ namespace olda
             [](auto &lhs, auto &rhs)
             { return lhs + rhs; }));
         
-        const size_t flow_hash = std::hash<std::string>()(omni_graph.g[vertex_stack.top()].flow_str);
+        const std::string flow_str = omni_graph.g[vertex_stack.top()].flow_str;
+        
+        const size_t flow_hash = std::hash<std::string>()(flow_str);
 
         omni_graph.g[vertex_stack.top()].param_hash = param_hash;
         omni_graph.g[vertex_stack.top()].flow_hash = flow_hash;
@@ -91,16 +93,20 @@ namespace olda
         // pop the method information.
         caller.pop();
         vertex_stack.pop();
-         
-        // method_exit meaning that 
         
         if(not vertex_stack.empty()){
             omni_graph.path.push_back(vertex_stack.top());
+            
+            // omni_graph.g[vertex_stack.top()].flow_str += std::to_string(flow_hash);
+            // update vertex hash next vertex
+            // omni_graph.g[vertex_stack.top()].flow_hash = std::hash<std::string>()(omni_graph.g[vertex_stack.top()].flow_str);
+            // omni_graph.g[vertex_stack.top()].flow_str = "";
+            // omni_graph.g[vertex_stack.top()].flow_str.shrink_to_fit();
+
+            omni_graph.local_fields.pop();
+            omni_graph.local_prim.pop();
+            omni_graph.local_obj.pop();
         }
-        
-        omni_graph.local_fields.pop();
-        omni_graph.local_prim.pop();
-        omni_graph.local_obj.pop();
 
         return;
     }

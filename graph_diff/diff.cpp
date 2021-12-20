@@ -69,6 +69,18 @@ namespace olda
             return v.context_hash;
     }
 
+    std::vector<Graph::vertex_descriptor>filter (std::vector<Graph::vertex_descriptor>&path, Graph& g){
+        std::vector<Graph::vertex_descriptor> res;
+        for(auto& p : path )
+        {
+            const std::string method_name = g[p].method_str;
+            if(method_name.find("junit") == std::string::npos && 
+            method_name.find("ant") == std::string::npos)
+            res.push_back(p);
+        }
+        return res;
+    }
+
     Graph diff(OmniGraph origin, OmniGraph target, std::map<std::string, std::string> &opt)
     {
 
@@ -506,7 +518,10 @@ namespace olda
         Graph &u = target.g;
         auto &g_path = origin.path;
         auto &u_path = target.path;
-
+        
+        u_path = filter(u_path,u);
+        g_path = filter(g_path,g);
+        
         std::reverse(g_path.begin(), g_path.end());
         std::reverse(u_path.begin(), u_path.end());
 
@@ -522,7 +537,7 @@ namespace olda
         // recored all hash value of vertex
         for (boost::tie(bgn, lst) = vertices(g); bgn != lst; bgn++)
         {
-            if( hash_memo[get_hash(g[*bgn],opt)] != hash_memo.end())
+            if( hash_memo.find(get_hash(g[*bgn],opt)) != hash_memo.end())
             {
                 std::cout << " ======= same vertex exist ======== " << std::endl;
             }
@@ -532,8 +547,7 @@ namespace olda
         for (auto &p : u_path)
         {
             auto v = u[p];
-            if (hash_memo.find(get_hash(v, opt)) != hash_memo.end() && 
-                g[(hash_memo.find(get_hash(v,opt)))->first].method_str == v.method_str)
+            if (hash_memo.find(get_hash(v, opt)) != hash_memo.end())
             {
                 auto new_vertex = add_vertex(diffGraph);
                 diffGraph[new_vertex] = v;
@@ -581,18 +595,6 @@ namespace olda
             }
         }
         
-        for(auto& p : u_path)
-        {
-            if(hash_memo.find(get_hash(u[p], opt)) != hash_memo.end())
-            {
-                auto str = u[p].method_str;
-                if(str.find("ant") == std::string::npos  && str.find("junit") == std::string::npos)
-                {
-                    std::cout << u[p].method_str << " ->";
-                }
-            }   
-        }
-        std::cout << std::endl;
         return diffGraph;
     }
 } // namespace old

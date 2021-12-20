@@ -92,7 +92,7 @@ namespace olda
                 std::string flow_str = "";
                 flow_str += std::accumulate(parsed_log.begin(), parsed_log.end(), emp);
 
-                omni_graph.g[vertex_stack.top()].flow_str  = flow_str;
+                omni_graph.g[vertex_stack.top()].flow_str  += flow_str;
             }
         }
 
