@@ -14,7 +14,7 @@ namespace olda
             const std::string flow_hash = std::to_string(g[v].flow_hash);
             const std::string param_hash = std::to_string(g[v].param_hash);
 
-            g[v].output_format = g[v].method_str + "\nhash=" + flow_hash + "\nparam=" + param_hash;
+            g[v].output_format = g[v].method_str + "\nflow=" + flow_hash + "\nparam=" + param_hash;
         }
 
         auto edge_range = edges(g);
