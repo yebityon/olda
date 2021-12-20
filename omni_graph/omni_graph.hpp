@@ -103,6 +103,9 @@ namespace olda
         Graph::vertex_descriptor root;
         // {ThreadId : stack<>}           
         std::map<int, std::stack<Graph::vertex_descriptor>> vertex_stack; // call stack
+        
+        std::map<int, std::stack<Graph::vertex_descriptor>> vertex_recored;
+        
         // {ThreadId : stack<>}
         std::map<int, std::stack<std::map<std::string, std::string>>> caller;
         std::string context; // for weak hash
@@ -137,6 +140,8 @@ namespace olda
         std::vector<std::vector<std::string>> objectfile;
         // object_id -> value
         std::map<int, std::string> stringfile;
+
+        bool is_debug;
 
         std::vector<Graph::vertex_descriptor>path;
         inline void setFileData(FileDatas fd)

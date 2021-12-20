@@ -39,6 +39,9 @@ int main(int argc, char *argv[])
         else if(arg == "--context")
         {
             opt["context"] = "valid";
+        } else if(arg == "--debug")
+        {
+            opt["debug"] = "valid";
         }
         else if (arg.find("--") != std::string::npos)
         {
@@ -72,6 +75,7 @@ int main(int argc, char *argv[])
     debug_flush(opt["flow"]);
     debug_flush(opt["param"]);
     debug_flush(opt["context"]);
+    debug_flush(opt["debug"]);
 
     progress("analyzing metafile....");
     olda::FileDatas origin(origin_log, origin_dir);
@@ -80,7 +84,7 @@ int main(int argc, char *argv[])
 
     //===================== ORIGIN GRAPH ======================
     progress("constructing origin graph....");
-    const auto origin_graph = construct_graph(origin);
+    const auto origin_graph = construct_graph(origin,opt);
 
     progress("writing origin tree file....");
     olda::write_graphviz(origin_graph, "./target/origin.dot");
@@ -92,7 +96,7 @@ int main(int argc, char *argv[])
 
     //===================== TARGET GRAPH ======================
     std::cout << "[olda]: constructing target graph....";
-    const auto target_graph = construct_graph(target);
+    const auto target_graph = construct_graph(target,opt);
     std::cout << " DONE!!\n";
     
     std::cout << "[olda]: writing target tree file...";

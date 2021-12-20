@@ -19,7 +19,7 @@ namespace olda
         "ARRAY_STORE", "ARRAY_SOTRE_VALUE", "ARRAY_STORE_INDEX",
         "LOCAL_STORE", "LOCAL_INCREMENT"};
 
-    olda::OmniGraph construct_graph(olda::FileDatas &d);
+    olda::OmniGraph construct_graph(olda::FileDatas &d, std::map<std::string,std::string>&opt);
 
     void parse_method_entry(const std::string log, OmniGraph &g);
     void parse_method_param(const std::string log, OmniGraph &g);

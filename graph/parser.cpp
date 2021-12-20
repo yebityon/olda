@@ -11,7 +11,7 @@ namespace olda
         Weak Compatiblitiy - some method has different hash value from different other method.
 
     */
-    OmniGraph construct_graph(FileDatas &fd)
+    OmniGraph construct_graph(FileDatas &fd, std::map<std::string,std::string>&opt)
     {
         OmniGraph omni_graph;
         omni_graph.setFileData(fd);
@@ -24,6 +24,8 @@ namespace olda
         int crt_progress = 0;
         long long cnt = 0;
 
+        omni_graph.is_debug = (opt["debug"] == "valid" );
+        
         for (std::string log : omni_graph.omni_log)
         {
             cnt += 1;
@@ -95,19 +97,21 @@ namespace olda
                 omni_graph.g[vertex_stack.top()].flow_str  += flow_str;
             }
         }
+        if( omni_graph.is_debug ){
+            
+        std::cout << " **************** object_order *****************" << std::endl;
+        for (auto &mp : omni_graph.object_order)
+        {
+            //            std::cout << " ++++++ " << mp.first << " : " << omni_graph.typefile[std::stoi(omni_graph.objectfile[mp.first][1])][1] << " ++++++ " << std::endl;
+            for (auto &itr : mp.second)
+            {
+                std::cout << itr.first << " : " << itr.second << std::endl;
+            }
+        }
+        std::cout << " **************** object_order *****************" << std::endl;
 
-        // std::cout << " **************** object_order *****************" << std::endl;
-        // for (auto &mp : omni_graph.object_order)
-        // {
-        //     //            std::cout << " ++++++ " << mp.first << " : " << omni_graph.typefile[std::stoi(omni_graph.objectfile[mp.first][1])][1] << " ++++++ " << std::endl;
-        //     for (auto &itr : mp.second)
-        //     {
-        //         std::cout << itr.first << " : " << itr.second << std::endl;
-        //     }
-        // }
-        // std::cout << " **************** object_order *****************" << std::endl;
-
-        // std::cout << "=================== END  ====================" << std::endl;
+        std::cout << "=================== END  ====================" << std::endl;
+        }
 
         return omni_graph;
     }
