@@ -9,7 +9,7 @@
 #include <vector>
 
 inline void progress(const std::string message){
-    std::cout << "\r" << "[olda]: " << message << std::string(' ',50);
+    std::cout << "[olda]: " << message << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -42,6 +42,14 @@ int main(int argc, char *argv[])
         } else if(arg == "--debug")
         {
             opt["debug"] = "valid";
+
+        } else if(arg == "--hard"){
+
+            opt["hard"] = "valid";
+
+        } else if(arg == "--easy"){
+
+            opt["easy"] = "easy";
         }
         else if (arg.find("--") != std::string::npos)
         {
@@ -108,7 +116,8 @@ int main(int argc, char *argv[])
     std::cout << "[olda]: calculating diff_graph....";
     
     //    const auto graph_diff = olda::diff(origin_graph, target_graph, opt);
-    const auto graph_diff = olda::backward_diff(origin_graph, target_graph, opt);
+    const auto graph_diff = (opt["hard"] == "valid" ? olda::diff(origin_graph,target_graph,opt) : 
+    olda::backward_diff(origin_graph, target_graph, opt) );
 
     std::cout << " DONE!!\n";
     

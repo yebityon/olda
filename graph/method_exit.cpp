@@ -52,11 +52,6 @@ namespace olda
         };
 
 
-        omni_graph.g[vertex_stack.top()].flow_hash =
-            std::hash<std::string>()(omni_graph.g[vertex_stack.top()].flow_str);
-
-        const size_t child_hash = omni_graph.g[vertex_stack.top()].flow_hash;
-
         size_t return_hash = 0;
 
         const bool isObject = (mep.find("objectType") != mep.end());
@@ -102,11 +97,11 @@ namespace olda
             // omni_graph.g[vertex_stack.top()].flow_hash = std::hash<std::string>()(omni_graph.g[vertex_stack.top()].flow_str);
             // omni_graph.g[vertex_stack.top()].flow_str = "";
             // omni_graph.g[vertex_stack.top()].flow_str.shrink_to_fit();
-
+        }
+        
             omni_graph.local_fields.pop();
             omni_graph.local_prim.pop();
             omni_graph.local_obj.pop();
-        }
 
         return;
     }

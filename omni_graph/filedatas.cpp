@@ -62,6 +62,20 @@ namespace olda
         }
         return res;
     };
+    
+    std::map<int,std::vector<std::string>> FileDatas::exceptionfile_parser(const std::string filepath)
+    {
+        auto vs = read_file(filepath);
+        std::map<int, std::vector<std::string>> res;
+        for(const auto& s : vs){
+            
+            auto parsed = olda::split(s,',');
+            const int id = std::stoi(parsed.front());
+            parsed.erase(parsed.begin());
+            res[id] = parsed;
+        }
+        return res;
+    }
 
     void FileDatas::read_metafile()
     {
@@ -85,12 +99,14 @@ namespace olda
                 this->string_filename = path.string();
             }
             else if(path.string().find("LOG$Exceptions") != std::string::npos){
-                // read excecptions file
+                this-> exceptions_filename = path.string();
             }
         }
         this->typefile = this->typefile_parser(this->type_filename);
         this->objectfile = this->objectfile_parser(this->object_filename);
         this->stringfile = this->stringfile_parser(this->string_filename);
+        this->exceptions = this->exceptionfile_parser(this->exceptions_filename);
+
         return;
     }
 

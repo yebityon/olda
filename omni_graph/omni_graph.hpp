@@ -68,18 +68,20 @@ namespace olda
         std::vector<std::vector<std::string>> typefile_parser(const std::string filepath);
         std::vector<std::vector<std::string>> objectfile_parser(const std::string filepath);
         std::map<int, std::string> stringfile_parser(const std::string filepath);
+        std::map<int,std::vector<std::string>> exceptionfile_parser(const std::string filepath);
+
         std::string log_filename, dirname;
 
     public:
-        std::string type_filename, dataids_filename, object_filename, string_filename;
+        std::string type_filename, dataids_filename, object_filename, string_filename,exceptions_filename;
 
         std::vector<std::vector<std::string>> typefile, objectfile;
         std::map<int, std::string> stringfile;
         std::vector<std::map<std::string, std::string>> dataids;
         std::vector<std::string> omni_log;
+        std::map<int, std::vector<std::string>> exceptions;
 
         FileDatas(std::string _log_name, std::string _dir_name);
-
         void read_omnilog();
         void read_metafile();
         void read_dataids();
@@ -140,6 +142,8 @@ namespace olda
         std::vector<std::vector<std::string>> objectfile;
         // object_id -> value
         std::map<int, std::string> stringfile;
+        // id -> exception  & trace
+        std::map<int, std::vector<std::string>> exceptions;
 
         bool is_debug;
 

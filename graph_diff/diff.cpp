@@ -539,7 +539,7 @@ namespace olda
         {
             if( hash_memo.find(get_hash(g[*bgn],opt)) != hash_memo.end())
             {
-                std::cout << " ======= same vertex exist ======== " << std::endl;
+//                std::cout << " ======= same vertex exist ======== " << std::endl;
             }
             hash_memo[get_hash(g[*bgn], opt)] = *bgn;
         }
@@ -547,7 +547,8 @@ namespace olda
         for (auto &p : u_path)
         {
             auto v = u[p];
-            if (hash_memo.find(get_hash(v, opt)) != hash_memo.end())
+            if (hash_memo.find(get_hash(v, opt)) != hash_memo.end() && 
+                g[hash_memo.find(get_hash(v, opt)) -> first].method_str == v.method_str)
             {
                 auto new_vertex = add_vertex(diffGraph);
                 diffGraph[new_vertex] = v;

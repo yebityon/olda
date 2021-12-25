@@ -45,6 +45,11 @@ namespace olda
         {
             param = mpp["Value"];
         }
+        if(omni_graph.is_debug)
+        {
+            std::cout << omni_graph.g[vertex_stack.top()].method_str << " -> " << param << std::endl;
+            
+        }
         omni_graph.g[vertex_stack.top()].param_list.push_back(param);
         return;
     }

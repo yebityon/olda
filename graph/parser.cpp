@@ -42,6 +42,7 @@ namespace olda
                 const int thread_id = std::stoi(extract_method_from_dataids(log, "ThreadId="));
                 auto &vertex_stack = omni_graph.vertex_stack[thread_id];
                 auto &caller = omni_graph.caller[thread_id];
+                
                 // std::string context holds the bytecode of caller method.
                 std::string context;
 
@@ -51,7 +52,9 @@ namespace olda
                 }
                 else
                 {
-                    std::cout << "EMPTY LOG : " + log << std::endl;
+                    if(omni_graph.is_debug){
+                        std::cout << "EMPTY LOG : " + log << std::endl;
+                    }
                 }
                 parse_method_entry(log, omni_graph);
             }
@@ -79,6 +82,8 @@ namespace olda
             }
             else if (is_exist(read_orders, log))
             {
+                // TODO : CALL Instruction should be recored to the object page 
+                // ONLY catch CALL Instruction.
             }
             else
             {
@@ -115,7 +120,7 @@ namespace olda
         std::cout << " **************** object_order *****************" << std::endl;
         for (auto &mp : omni_graph.object_order)
         {
-            //            std::cout << " ++++++ " << mp.first << " : " << omni_graph.typefile[std::stoi(omni_graph.objectfile[mp.first][1])][1] << " ++++++ " << std::endl;
+            std::cout << " ++++++ " << mp.first << " : " << omni_graph.typefile[std::stoi(omni_graph.objectfile[mp.first][1])][1] << " ++++++ " << std::endl;
             for (auto &itr : mp.second)
             {
                 std::cout << itr.first << " : " << itr.second << std::endl;
