@@ -22,7 +22,7 @@ namespace olda
         return mp;
     };
     
-    std::map<std::string,std::string> _parse_call_return(const std::string log)
+    std::map<std::string,std::string> _parse_call_exit(const std::string log)
     {
         auto res = olda::parse_bytecode(log);
         return res;
@@ -112,9 +112,23 @@ namespace olda
         return;
     }
 
-    void parse_call_exit(const std::string log, OmniGraph&g)
+    void parse_call_exit(const std::string log, OmniGraph& omni_graph)
     {
+        auto cep = _parse_call_exit(log);
+        const int thread_id = std::stoi(cep["ThreadId"]);
+
+        auto &call_inst_stack = omni_graph.call_inst_stack[thread_id];
+        auto& caller_top =call_inst_stack.top();
         
+        assert(not call_inst_stack.empty());
+        if (omni_graph.is_debug)
+        {
+            const std::string parent_name = olda::split(caller_top["other"], ',')[0];
+            const std::string param_name = olda::split(cep["other"], ',')[0];
+            assert(parent_name == param_name);
+        }
+
+        call_inst_stack.pop();
         return;
     }
 
