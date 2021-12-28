@@ -110,6 +110,10 @@ namespace olda
         
         // {ThreadId : stack<>}
         std::map<int, std::stack<std::map<std::string, std::string>>> caller;
+        
+        // {ThreadId : CALL_Instruction of stack<>}
+        std::map<int, std::stack<std::map<std::string, std::string>>> call_inst_stack;
+
         std::string context; // for weak hash
         std::vector<std::string> omni_log;
 

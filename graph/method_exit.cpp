@@ -106,4 +106,9 @@ namespace olda
         return;
     }
 
+    void parse_call_exit(const std::string log, OmniGraph&g)
+    {
+        return;
+    }
+
 } // namespace olda

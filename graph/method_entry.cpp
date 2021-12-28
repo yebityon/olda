@@ -3,6 +3,7 @@
 
 namespace olda
 {
+    // Note: sp_method is the description of the other.
     const std::vector<std::string> sp_method_entry_key = {
         "Line", "LineNum",
         "Class",
@@ -10,7 +11,9 @@ namespace olda
     std::map<std::string, std::string> _parse_method_entry(const std::string method_entry)
     {
         std::map<std::string, std::string> mp = olda::parse_bytecode(method_entry);
+
         const std::string other = mp["other"];
+        // try to split mp["other"] infos.
         const std::vector<std::string> tmp = olda::split(other, ',');
 
         for (int i = 0; i < tmp.size(); ++i)
@@ -19,6 +22,14 @@ namespace olda
         }
         // start from parse
         return mp;
+    }
+
+    std::map<std::string, std::string> _parse_call(const std::string log)
+    {
+
+        std::map<std::string, std::string> res = olda::parse_bytecode(log);
+        // Just ignore "other" information.
+        return res;
     }
 
     void parse_method_entry(const std::string log, OmniGraph &omni_graph)
@@ -46,7 +57,7 @@ namespace olda
             caller.push(mep);
             vertex_stack.push(omni_graph.root);
             omni_graph.path.emplace_back(omni_graph.root);
-            
+
             return;
         }
 
@@ -56,17 +67,17 @@ namespace olda
 
         std::string prev_method_name = prev_method["MethodFullName"];
         std::string current_method_name = mep["MethodFullName"];
-        
+
         // update current information
         omni_graph.g[to].method_hash = mep["Hash"];
         omni_graph.g[to].method_str = current_method_name;
         omni_graph.g[to].flow_str = omni_graph.context;
         // Note : previous method exsit.
         omni_graph.g[to].context_hash = omni_graph.g[from].flow_hash;
-        
+
         // Init flow str.
         omni_graph.g[to].flow_str = "";
-        
+
         omni_graph.g[from].edge_cnt += 1;
 
         // generete edge
@@ -78,9 +89,34 @@ namespace olda
         omni_graph.g[e].cost = omni_graph.g[from].edge_cnt;
 
         omni_graph.path.emplace_back(to);
-        
+
         caller.push(mep);
         vertex_stack.push(to);
+
+        return;
+    }
+
+    // EventId=289,EventType=CALL,ThreadId=0,DataId=232,Value=5,objectType=java.util.ArrayList,method:CallType=Regular,Instruction=INVOKEVIRTUAL,Owner=java/util/ArrayList,Name=add,Desc=(Ljava/lang/Object;)Z,,myObject/Parent:setComplexArrayList,Parent.java:41:4
+
+    void parse_call_entry(const std::string log, OmniGraph &omni_graph)
+    {
+        std::map<std::string, std::string> mp = _parse_call(log);
+
+        bool isObject = mp.find("objectType") != mp.end();
+
+        if (isObject)
+        {
+            // this call method is for object
+            bool isString = is_string_type(mp["objectType"]);
+            const int object_id = std::stoi(mp["Value"]);
+            omni_graph.object_order[object_id][-1] += olda::clean_log(log);
+        }
+        else
+        {
+            std::cout << "[olda] Warning : Not object CALL is detected." << std::endl;
+            std::cout << "======== " << log << " ========" << std::endl;
+        }
+        return;
     }
 
 }

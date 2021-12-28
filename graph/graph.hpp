@@ -26,7 +26,11 @@ namespace olda
     void parse_method_exit(const std::string log, OmniGraph &g);
     void parse_write_array(const std::string log, OmniGraph &g);
     void parse_write_object(const std::string log, OmniGraph &g);
+    void parse_call_entry(const std::string log, OmniGraph &g);
+    void parse_call_param(const std::string log, OmniGraph& g);
+    void parse_call_exit(const std::string log, OmniGraph& g);
 
     std::map<std::string, std::string> parse_bytecode(const std::string inst);
+    std::string clean_log(std::string log);
 
 } // namespace olda

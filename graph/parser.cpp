@@ -11,7 +11,7 @@ namespace olda
         Weak Compatiblitiy - some method has different hash value from different other method.
 
     */
-    OmniGraph construct_graph(FileDatas &fd, std::map<std::string,std::string>&opt)
+    OmniGraph construct_graph(FileDatas &fd, std::map<std::string, std::string> &opt)
     {
         OmniGraph omni_graph;
         omni_graph.setFileData(fd);
@@ -19,13 +19,13 @@ namespace olda
         {
             omni_graph.object_order[object_id][-1] = str;
         }
-        
+
         int filisize = omni_graph.omni_log.size();
         int crt_progress = 0;
         long long cnt = 0;
 
-        omni_graph.is_debug = (opt["debug"] == "valid" );
-        
+        omni_graph.is_debug = (opt["debug"] == "valid");
+
         for (std::string log : omni_graph.omni_log)
         {
             cnt += 1;
@@ -42,7 +42,7 @@ namespace olda
                 const int thread_id = std::stoi(extract_method_from_dataids(log, "ThreadId="));
                 auto &vertex_stack = omni_graph.vertex_stack[thread_id];
                 auto &caller = omni_graph.caller[thread_id];
-                
+
                 // std::string context holds the bytecode of caller method.
                 std::string context;
 
@@ -52,7 +52,8 @@ namespace olda
                 }
                 else
                 {
-                    if(omni_graph.is_debug){
+                    if (omni_graph.is_debug)
+                    {
                         std::cout << "EMPTY LOG : " + log << std::endl;
                     }
                 }
@@ -67,23 +68,35 @@ namespace olda
                 // Note : METHOD_exception is also write order.
                 parse_method_exit(log, omni_graph);
             }
-            else if (eventType == "LOCAL_STORE" || 
-                    eventType == "LOCAL_INCREMENT" ||
-                 eventType == "PUT_INSTANCE_FIELD" || 
-                 eventType == "PUT_INSTANCE_FIELD_VALUE" || 
-                 eventType == "PUT_STATIC_FIELD")
+            else if (eventType == "LOCAL_STORE" ||
+                     eventType == "LOCAL_INCREMENT" ||
+                     eventType == "PUT_INSTANCE_FIELD" ||
+                     eventType == "PUT_INSTANCE_FIELD_VALUE" ||
+                     eventType == "PUT_STATIC_FIELD")
             {
                 parse_write_object(log, omni_graph);
             }
-            else if (eventType == "ARRAY_STORE" || eventType == "ARRAY_STORE_VALUE" || 
+            else if (eventType == "ARRAY_STORE" || eventType == "ARRAY_STORE_VALUE" ||
                      eventType == "ARRAY_STORE_INDEX")
             {
                 parse_write_array(log, omni_graph);
             }
-            else if (is_exist(read_orders, log))
+            else if (eventType.find("CALL") != std::string::npos)
             {
-                // TODO : CALL Instruction should be recored to the object page 
+                // TODO : CALL Instruction should be recored to the object page
                 // ONLY catch CALL Instruction.
+                if (eventType == "CALL")
+                {
+                    parse_call_entry(log, omni_graph);
+                }
+                else if (eventType == "CALL_PARAM")
+                {
+                    parse_call_param(log, omni_graph);
+                }
+                else if (eventType == "CALL_RETURN")
+                {
+                    parse_call_exit(log, omni_graph);
+                }
             }
             else
             {
@@ -93,42 +106,26 @@ namespace olda
 
                 if (vertex_stack.empty())
                     continue;
-                auto parsed_log = olda::split(log,',');
-                
-                // earse line number 
-                parsed_log.back() = parsed_log.back().substr(0,parsed_log.back().find(':'));
-                
-                // erase dataid
-                auto itr = std::remove_if(parsed_log.begin(), parsed_log.end(),
-                                          [](const std::string e)
-                                          {
 
-                                              return e.find("DataId=") != std::string::npos ||
-                                                     e.find("Value=") != std::string::npos ||
-                                                     e.find("EventId=") != std::string::npos;
-                                          });
-
-                parsed_log.erase(itr, parsed_log.end());
-                std::string emp = "";
-                std::string flow_str = "";
-                flow_str += std::accumulate(parsed_log.begin(), parsed_log.end(), emp);
-                omni_graph.g[vertex_stack.top()].flow_str  += flow_str;
+                const std::string flow_str = olda::clean_log(log);
+                omni_graph.g[vertex_stack.top()].flow_str += flow_str;
             }
         }
-        if( omni_graph.is_debug ){
-            
-        std::cout << " **************** object_order *****************" << std::endl;
-        for (auto &mp : omni_graph.object_order)
+        if (omni_graph.is_debug)
         {
-            std::cout << " ++++++ " << mp.first << " : " << omni_graph.typefile[std::stoi(omni_graph.objectfile[mp.first][1])][1] << " ++++++ " << std::endl;
-            for (auto &itr : mp.second)
-            {
-                std::cout << itr.first << " : " << itr.second << std::endl;
-            }
-        }
-        std::cout << " **************** object_order *****************" << std::endl;
 
-        std::cout << "=================== END  ====================" << std::endl;
+            std::cout << " **************** object_order *****************" << std::endl;
+            for (auto &mp : omni_graph.object_order)
+            {
+                std::cout << " ++++++ " << mp.first << " : " << omni_graph.typefile[std::stoi(omni_graph.objectfile[mp.first][1])][1] << " ++++++ " << std::endl;
+                for (auto &itr : mp.second)
+                {
+                    std::cout << itr.first << " : " << itr.second << std::endl;
+                }
+            }
+            std::cout << " **************** object_order *****************" << std::endl;
+
+            std::cout << "=================== END  ====================" << std::endl;
         }
 
         return omni_graph;
