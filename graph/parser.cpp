@@ -28,6 +28,9 @@ namespace olda
 
         for (std::string log : omni_graph.omni_log)
         {
+            if(omni_graph.is_debug){
+                std::cout << log << std::endl;
+            }
             cnt += 1;
             if (cnt * 100 / filisize > crt_progress)
             {

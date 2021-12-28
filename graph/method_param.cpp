@@ -71,14 +71,17 @@ namespace olda
         
         assert(not caller.empty());
         
-        auto caller_top = caller.top();
+        auto& caller_top = caller.top();
         
         const std::string parent_name = olda::split(caller_top["other"],',')[0];
         const std::string param_name = olda::split(cpp["other"],',')[0];
-
-        assert( caller_top.find("objectType") != caller_top.end());
+        
+        // Some method has no object value
+        // e.g., toBoolean
+//        assert( caller_top.find("objectType") != caller_top.end());
 
         assert(parent_name == param_name);
+        
         bool isObject = cpp.find("objectType")  != cpp.end();
         /**
          * Note: caller should be object
@@ -93,6 +96,7 @@ namespace olda
             const int object_id = std::stoi(cpp["Value"]);
             const std::string object_hash = std::to_string(std::hash<std::string>()(omni_graph.object_order[object_id][-1]));
             param = object_hash;
+
         } else {
             param = cpp["Value"];
         }

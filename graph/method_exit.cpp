@@ -21,6 +21,12 @@ namespace olda
 
         return mp;
     };
+    
+    std::map<std::string,std::string> _parse_call_return(const std::string log)
+    {
+        auto res = olda::parse_bytecode(log);
+        return res;
+    }
 
     void parse_method_exit(const std::string log, OmniGraph &omni_graph)
     {
@@ -108,6 +114,7 @@ namespace olda
 
     void parse_call_exit(const std::string log, OmniGraph&g)
     {
+        
         return;
     }
 

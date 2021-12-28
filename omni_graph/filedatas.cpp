@@ -68,8 +68,8 @@ namespace olda
         auto vs = read_file(filepath);
         std::map<int, std::vector<std::string>> res;
         for(const auto& s : vs){
-            
-            auto parsed = olda::split(s,',');
+            std::cout << s << std::endl;
+            auto parsed = olda::split(s, ',');
             const int id = std::stoi(parsed.front());
             parsed.erase(parsed.begin());
             res[id] = parsed;
@@ -99,13 +99,13 @@ namespace olda
                 this->string_filename = path.string();
             }
             else if(path.string().find("LOG$Exceptions") != std::string::npos){
-                this-> exceptions_filename = path.string();
+               this-> exceptions_filename = path.string();
             }
         }
         this->typefile = this->typefile_parser(this->type_filename);
         this->objectfile = this->objectfile_parser(this->object_filename);
         this->stringfile = this->stringfile_parser(this->string_filename);
-        this->exceptions = this->exceptionfile_parser(this->exceptions_filename);
+//        this->exceptions = this->exceptionfile_parser(this->exceptions_filename);
 
         return;
     }

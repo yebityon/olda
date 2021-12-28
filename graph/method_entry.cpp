@@ -103,6 +103,9 @@ namespace olda
         std::map<std::string, std::string> mp = _parse_call(log);
 
         bool isObject = mp.find("objectType") != mp.end();
+        const int thread_id = std::stoi(mp["ThreadId"]);
+        auto& call_inst_stack = omni_graph.call_inst_stack[thread_id];
+        
 
         if (isObject)
         {
@@ -115,7 +118,11 @@ namespace olda
         {
             std::cout << "[olda] Warning : Not object CALL is detected." << std::endl;
             std::cout << "======== " << log << " ========" << std::endl;
+            
         }
+        
+        call_inst_stack.push(mp);
+        
         return;
     }
 
