@@ -61,25 +61,27 @@ namespace olda
 
     size_t get_hash(const method_vertex &v, std::map<std::string, std::string> &opt)
     {
-        if(opt.find("param") != opt.end())
+        if (opt.find("param") != opt.end())
             return v.param_hash;
-        if(opt.find("flow") != opt.end())
+        if (opt.find("flow") != opt.end())
             return v.flow_hash;
-        if(opt.find("context") != opt.end())
+        if (opt.find("context") != opt.end())
             return v.context_hash;
     }
 
-    std::vector<Graph::vertex_descriptor>filter (std::vector<Graph::vertex_descriptor>&path, Graph& g){
+    std::vector<Graph::vertex_descriptor> filter(std::vector<Graph::vertex_descriptor> &path, Graph &g)
+    {
         std::vector<Graph::vertex_descriptor> res;
-        for(auto& p : path )
+        for (auto &p : path)
         {
             const std::string method_name = g[p].method_str;
-            if(method_name.find("junit") == std::string::npos && 
-            method_name.find("ant") == std::string::npos)
-            res.push_back(p);
+            if (method_name.find("junit") == std::string::npos &&
+                method_name.find("ant") == std::string::npos)
+                res.push_back(p);
         }
         return res;
     }
+
 
     Graph diff(OmniGraph origin, OmniGraph target, std::map<std::string, std::string> &opt)
     {
@@ -291,8 +293,75 @@ namespace olda
 
     Graph easy_diff(OmniGraph origin, OmniGraph target, std::map<std::string, std::string> &opt)
     {
-        std::cout << "easy_diff is called....!!\n"
-                  << std::endl;
+
+        std::cout << "[olda]: easy_diff is runnning...!\n";
+
+        Graph &g = origin.g;
+        Graph &u = target.u;
+        std::stack<Graph::vertex_descriptor> diff_path;
+
+        auto ov = origin.root;
+        auto tv = target.root;
+
+        // Treversal start from here..
+
+        std::stack<Graph::vertex_descriptor> origin_caller;
+        std::stack<Graph::vertex_descriptor> target_caller;
+        
+        origin_caller.push(origin.root);
+        target_caller.push(target.root);
+        
+        bool synclonized = true;
+        int clock = 0;
+        
+        while (synclonized)
+        {
+            auto otop = origin_caller.top();
+            auto ttop = target_caller.top();
+            
+            Graph::out_edge_iterator obeg, oend;
+            boost::tie(obeg,oend) = boost::out_edges(otop,g);
+            
+            Graph::out_edge_iterator tbeg, tend;
+            boost::tie(tbeg,tend) = boost::out_edges(ttop,u);
+            
+            auto check_rage = [&](Graph::out_edge_descriptor l, Graph::out_edge_descriptor r)
+            {
+                // check range.
+            };
+            
+            bool cv_updated = false;
+            
+            while(not cv_updated)
+            {
+                auto ocv = boost::target(*obeg,g);
+                auto tcv = boost::target(*tbeg,u);
+                
+                if( g[ocv].method_str !=  u[tcv].method_str)
+                {
+                    std::cout << "[olda] : Assertion Failed" << std::endl;
+                    std::cout << ">>>>> " << g[ocv].method_str << "  and  " << g[ocv].method_str << " are different" << std::endl;
+                    exit(0);
+                }
+                if(get_hash(g[ocv],opt) == get_hash(u[tcv],opt))
+                {
+                    
+                    // Note child vertex has completely same hash, No need to traversal
+                    ++obeg;++tbeg;
+                }
+                else 
+                {
+                    // Note : the hash is different...  you need to travel more.
+                    cv_updated = true;
+                    origin_caller.push(ocv);
+                    target_caller.push(tcv);
+                }
+                
+                // TODO : check range 
+                ++obeg; ++tbeg;
+            }
+            
+        }
 
         size_t edge_g_cnt = 0, edge_u_cnt = 0;
 
@@ -511,17 +580,17 @@ namespace olda
     {
 
         std::cout << "backward_diff is called." << std::endl;
-        
+
         size_t edge_g_cnt = 0, edge_u_cnt = 0;
 
         Graph &g = origin.g;
         Graph &u = target.g;
         auto &g_path = origin.path;
         auto &u_path = target.path;
-        
-        u_path = filter(u_path,u);
-        g_path = filter(g_path,g);
-        
+
+        u_path = filter(u_path, u);
+        g_path = filter(g_path, g);
+
         std::reverse(g_path.begin(), g_path.end());
         std::reverse(u_path.begin(), u_path.end());
 
@@ -537,9 +606,9 @@ namespace olda
         // recored all hash value of vertex
         for (boost::tie(bgn, lst) = vertices(g); bgn != lst; bgn++)
         {
-            if( hash_memo.find(get_hash(g[*bgn],opt)) != hash_memo.end())
+            if (hash_memo.find(get_hash(g[*bgn], opt)) != hash_memo.end())
             {
-//                std::cout << " ======= same vertex exist ======== " << std::endl;
+                //                std::cout << " ======= same vertex exist ======== " << std::endl;
             }
             hash_memo[get_hash(g[*bgn], opt)] = *bgn;
         }
@@ -547,8 +616,8 @@ namespace olda
         for (auto &p : u_path)
         {
             auto v = u[p];
-            if (hash_memo.find(get_hash(v, opt)) != hash_memo.end() && 
-                g[hash_memo.find(get_hash(v, opt)) -> first].method_str == v.method_str)
+            if (hash_memo.find(get_hash(v, opt)) != hash_memo.end() &&
+                g[hash_memo.find(get_hash(v, opt))->first].method_str == v.method_str)
             {
                 auto new_vertex = add_vertex(diffGraph);
                 diffGraph[new_vertex] = v;
@@ -580,22 +649,22 @@ namespace olda
 
                     boost::tie(e, is_inserted) = add_edge(pv, new_vertex, diffGraph);
                 }
-                
+
                 auto same_hash_gv = add_vertex(diffGraph);
-                diffGraph[same_hash_gv] = g[hash_memo[get_hash(v,opt)]];
+                diffGraph[same_hash_gv] = g[hash_memo[get_hash(v, opt)]];
 
                 std::cout << g[hash_memo[get_hash(v, opt)]].method_str << " " << v.method_str << " has same verticies !!" << std::endl;
 
-                    Graph::edge_descriptor e;
-                bool  is_inserted = false;
-                
-                boost::tie(e,is_inserted) = add_edge(new_vertex,same_hash_gv,diffGraph);
+                Graph::edge_descriptor e;
+                bool is_inserted = false;
+
+                boost::tie(e, is_inserted) = add_edge(new_vertex, same_hash_gv, diffGraph);
                 diffGraph[e].cost = 12345;
-                
+
                 break;
             }
         }
-        
+
         return diffGraph;
     }
 } // namespace old

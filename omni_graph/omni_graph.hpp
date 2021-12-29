@@ -57,7 +57,7 @@ namespace olda
         std::vector<std::string> param_list;
     };
 
-    using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS,
+    using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
                                         method_vertex,
                                         method_edges>;
 
