@@ -120,7 +120,8 @@ namespace olda
             std::cout << " **************** object_order *****************" << std::endl;
             for (auto &mp : omni_graph.object_order)
             {
-                std::cout << " ++++++ " << mp.first << " : " << omni_graph.typefile[std::stoi(omni_graph.objectfile[mp.first][1])][1] << " ++++++ " << std::endl;
+                std::cout << "+++++++++++ " << mp.first << " +++++++++++"  << std::endl;
+                
                 for (auto &itr : mp.second)
                 {
                     std::cout << itr.first << " : " << itr.second << std::endl;

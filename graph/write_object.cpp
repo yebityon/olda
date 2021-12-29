@@ -56,7 +56,7 @@ namespace olda
                 if (is_string_type(wop["objectType"]))
                 {
                     const std::string string_in = omni_graph.stringfile[object_id];
-                    omni_graph.object_order[object_id][-1] += omni_graph.stringfile[object_id];
+                    omni_graph.object_order[object_id][-1] = omni_graph.stringfile[object_id];
                 }
                 else /*  the object is not string type */
                 {
