@@ -116,8 +116,8 @@ namespace olda
         }
         else
         {
-            std::cout << "[olda] Warning : Not object CALL is detected." << std::endl;
-            std::cout << "======== " << log << " ========" << std::endl;
+            // std::cout << "[olda] Warning : Not object CALL is detected." << std::endl;
+            // std::cout << "======== " << log << " ========" << std::endl;
             
         }
         

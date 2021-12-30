@@ -321,11 +321,13 @@ namespace olda
             return l != r;
         };
 
-        auto get_hash = [&](method_vertex &v, std::map<std::string, std::string> &opt)
+        auto get_hash = [&](method_vertex v, std::map<std::string, std::string> &opt)
         {
-            return v.control_param_hash;
+            return v.control_flow_hash;
         };
-
+        
+        std::cout << "Synclonized start" << std::endl;
+        
         while (synclonized)
         {
             auto otop = origin_caller.top();
@@ -336,15 +338,20 @@ namespace olda
             
             Graph::out_edge_iterator tbeg, tend;
             boost::tie(tbeg,tend) = boost::out_edges(ttop,u);
-            
-            bool cv_updated = false;
-            
 
-            while( ( not cv_updated ))
+            if (not (check_range(obeg, oend) && check_range(tbeg, tend)))
             {
-                auto ocv = boost::target(*obeg,g);
+                break;
+            }
+
+                bool cv_updated = false;
+
+            while ((not cv_updated))
+            {
+                auto ocv = boost::target(*obeg, g);
                 auto tcv = boost::target(*tbeg,u);
 
+                std::cout << g[otop].method_str << ": ->" << g[ocv].method_str << std::endl;
                 if (not(check_range(obeg, oend) && check_range(tbeg, tend)))
                 {
                     synclonized = false;
@@ -382,21 +389,24 @@ namespace olda
             }
             
         }
-        
+
+        std::cout << "yebityon" << std::endl;
         std::vector<Graph::vertex_descriptor> output;
+        
         while(not origin_caller.empty())
         {
             auto v = boost::add_vertex(diffGraph);
             diffGraph[v] = g[origin_caller.top()];
-            
-            if( not output.empty() ) 
+        
+            if( not diff_path.empty() ) 
             {
                 Graph::edge_descriptor e;
                 bool is_inserted = false;
                 
-                boost::tie(e,is_inserted) = boost::add_edge(v, output.back(),diffGraph);
+                boost::tie(e,is_inserted) = boost::add_edge(v,diff_path.top(),diffGraph);
                 
             }
+            diff_path.push(v);
             output.emplace_back(origin_caller.top());
             origin_caller.pop();
         }
