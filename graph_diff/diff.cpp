@@ -297,7 +297,7 @@ namespace olda
         std::cout << "[olda]: easy_diff is runnning...!\n";
 
         Graph &g = origin.g;
-        Graph &u = target.u;
+        Graph &u = target.g;
         std::stack<Graph::vertex_descriptor> diff_path;
 
         auto ov = origin.root;
@@ -325,14 +325,14 @@ namespace olda
             Graph::out_edge_iterator tbeg, tend;
             boost::tie(tbeg,tend) = boost::out_edges(ttop,u);
             
-            auto check_rage = [&](Graph::out_edge_descriptor l, Graph::out_edge_descriptor r)
+            auto  check_range = [&](Graph::out_edge_iterator l, Graph::out_edge_iterator r)
             {
-                // check range.
+                return l != r;
             };
             
             bool cv_updated = false;
             
-            while(not cv_updated)
+            while( ( not cv_updated ) && check_range(obeg,oend) && check_range(tbeg,tend))
             {
                 auto ocv = boost::target(*obeg,g);
                 auto tcv = boost::target(*tbeg,u);
@@ -347,7 +347,14 @@ namespace olda
                 {
                     
                     // Note child vertex has completely same hash, No need to traversal
-                    ++obeg;++tbeg;
+                    if(check_range(obeg,oend) && check_range(tbeg,tend))
+                    {
+                        ++obeg; ++tbeg;
+                        
+                    }  else  {
+                        synclonized = false;
+                        break; // break from the vertex while 
+                    }
                 }
                 else 
                 {
@@ -356,84 +363,96 @@ namespace olda
                     origin_caller.push(ocv);
                     target_caller.push(tcv);
                 }
-                
-                // TODO : check range 
-                ++obeg; ++tbeg;
             }
             
         }
+        
+        std::vector<Graph::vertex_descriptor> output;
+        while(not origin_caller.empty())
+        {
+            output.emplace_back(origin_caller.top());
+            origin_caller.pop();
+        }
+        std::reverse(output.begin(),output.end());
+        
+        for(auto& e : output)
+        {
+            std::cout << g[e].method_str << " -> ";
+        }
 
-        size_t edge_g_cnt = 0, edge_u_cnt = 0;
+        std::cout << std::endl;
 
-        Graph &g = origin.g;
-        Graph &u = target.g;
+        // size_t edge_g_cnt = 0, edge_u_cnt = 0;
 
-        auto g_visitor = my_visitor();
-        auto u_visitor = my_visitor();
+        // Graph &g = origin.g;
+        // Graph &u = target.g;
 
-        auto &g_path = origin.path;
-        auto &u_path = target.path;
+        // auto g_visitor = my_visitor();
+        // auto u_visitor = my_visitor();
 
-        std::reverse(g_path.begin(), g_path.end());
-        std::reverse(u_path.begin(), u_path.end());
+        // auto &g_path = origin.path;
+        // auto &u_path = target.path;
+
+        // std::reverse(g_path.begin(), g_path.end());
+        // std::reverse(u_path.begin(), u_path.end());
 
         Graph diffGraph;
-        Graph::vertex_descriptor root;
+        // Graph::vertex_descriptor root;
 
-        std::stack<Graph::vertex_descriptor> preV;
+        // std::stack<Graph::vertex_descriptor> preV;
 
-        size_t idx = 0;
+        // size_t idx = 0;
 
-        while (idx < std::min(g_path.size(), u_path.size()))
-        {
+        // while (idx < std::min(g_path.size(), u_path.size()))
+        // {
 
-            if (not is_sameVertex(g[g_path[idx]], u[u_path[idx]], opt))
-            {
+        //     if (not is_sameVertex(g[g_path[idx]], u[u_path[idx]], opt))
+        //     {
 
-                auto new_vertex = add_vertex(diffGraph);
-                diffGraph[new_vertex] = g[g_path[idx]];
-                if (not preV.empty())
-                {
-                    auto pv = preV.top();
-                    // preV.pop();
+        //         auto new_vertex = add_vertex(diffGraph);
+        //         diffGraph[new_vertex] = g[g_path[idx]];
+        //         if (not preV.empty())
+        //         {
+        //             auto pv = preV.top();
+        //             // preV.pop();
 
-                    Graph::edge_descriptor e;
-                    bool is_inserted = false;
-                    boost::tie(e, is_inserted) = add_edge(pv, new_vertex, diffGraph);
-                }
+        //             Graph::edge_descriptor e;
+        //             bool is_inserted = false;
+        //             boost::tie(e, is_inserted) = add_edge(pv, new_vertex, diffGraph);
+        //         }
 
-                new_vertex = add_vertex(diffGraph);
-                diffGraph[new_vertex] = u[u_path[idx]];
-                if (not preV.empty())
-                {
-                    auto pv = preV.top();
-                    preV.pop();
+        //         new_vertex = add_vertex(diffGraph);
+        //         diffGraph[new_vertex] = u[u_path[idx]];
+        //         if (not preV.empty())
+        //         {
+        //             auto pv = preV.top();
+        //             preV.pop();
 
-                    Graph::edge_descriptor e;
-                    bool is_inserted = false;
-                    boost::tie(e, is_inserted) = add_edge(pv, new_vertex, diffGraph);
-                }
-                break; // break from loop
-            }
-            else
-            {
-                // same vertex
-                auto new_vertex = add_vertex(diffGraph);
-                diffGraph[new_vertex] = g[g_path[idx]];
+        //             Graph::edge_descriptor e;
+        //             bool is_inserted = false;
+        //             boost::tie(e, is_inserted) = add_edge(pv, new_vertex, diffGraph);
+        //         }
+        //         break; // break from loop
+        //     }
+        //     else
+        //     {
+        //         // same vertex
+        //         auto new_vertex = add_vertex(diffGraph);
+        //         diffGraph[new_vertex] = g[g_path[idx]];
 
-                if (not preV.empty())
-                {
-                    auto pv = preV.top();
-                    preV.pop();
-                    Graph::edge_descriptor e;
-                    bool is_inserted = false;
-                    boost::tie(e, is_inserted) = add_edge(pv, new_vertex, diffGraph);
-                }
-                preV.push(new_vertex);
-            }
+        //         if (not preV.empty())
+        //         {
+        //             auto pv = preV.top();
+        //             preV.pop();
+        //             Graph::edge_descriptor e;
+        //             bool is_inserted = false;
+        //             boost::tie(e, is_inserted) = add_edge(pv, new_vertex, diffGraph);
+        //         }
+        //         preV.push(new_vertex);
+        //     }
 
-            idx++;
-        }
+        //     idx++;
+        // }
 
         // std::reverse(g_path.begin(), g_path.end());
         // std::reverse(u_path.begin(), u_path.end());
