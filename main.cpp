@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
     
     //    const auto graph_diff = olda::diff(origin_graph, target_graph, opt);
     const auto graph_diff = (opt["hard"] == "valid" ? olda::diff(origin_graph,target_graph,opt) : 
-    olda::backward_diff(origin_graph, target_graph, opt) );
+    olda::easy_diff(origin_graph, target_graph, opt) );
 
     std::cout << " DONE!!\n";
     

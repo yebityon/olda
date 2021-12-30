@@ -43,6 +43,13 @@ namespace olda
         std::string flow_str;
         std::size_t flow_hash;
 
+        // control flow hash is the method-call-chain of the hash
+
+        std::size_t control_flow_hash;
+        
+        std::size_t control_param_hash;
+
+
         /*
          * context hash is the flow hash of the parent hash.
         */

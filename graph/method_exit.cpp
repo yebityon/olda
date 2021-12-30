@@ -97,12 +97,17 @@ namespace olda
         
         if(not vertex_stack.empty()){
             omni_graph.path.push_back(vertex_stack.top());
+
+            size_t cflow_hash = omni_graph.g[vertex_stack.top()].control_flow_hash;
+            cflow_hash = std::hash<std::string>()(std::to_string(cflow_hash) + std::to_string(flow_hash));
             
-            // omni_graph.g[vertex_stack.top()].flow_str += std::to_string(flow_hash);
-            // update vertex hash next vertex
-            // omni_graph.g[vertex_stack.top()].flow_hash = std::hash<std::string>()(omni_graph.g[vertex_stack.top()].flow_str);
-            // omni_graph.g[vertex_stack.top()].flow_str = "";
-            // omni_graph.g[vertex_stack.top()].flow_str.shrink_to_fit();
+            omni_graph.g[vertex_stack.top()].control_flow_hash = cflow_hash;
+            
+            size_t cparam_hash = omni_graph.g[vertex_stack.top()].control_param_hash;
+            cparam_hash = std::hash<std::string>()(std::to_string(cparam_hash) + std::to_string(param_hash));
+            
+            omni_graph.g[vertex_stack.top()].control_param_hash = cparam_hash;
+        
         }
         
             omni_graph.local_fields.pop();
