@@ -428,7 +428,7 @@ namespace olda
                     exit(0);
                 }
 
-                if (get_hash(g[ocv], opt) == get_hash(u[tcv], opt))
+                if (get_control_hash(g[ocv], opt) == get_control_hash(u[tcv], opt))
                 {
 
                     // Note child vertex has completely same hash, No need to traversal
@@ -439,11 +439,10 @@ namespace olda
                     }
                     else
                     {
-                        // It was the the last child
                         synclonized = false;
                         break; // break from the vertex while
                     }
-                }
+                } 
                 else
                 {
                     // Note : the hash is different...  you need to travel more.
