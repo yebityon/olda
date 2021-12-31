@@ -344,7 +344,7 @@ namespace olda
                 break;
             }
 
-                bool cv_updated = false;
+            bool cv_updated = false;
 
             while ((not cv_updated))
             {
