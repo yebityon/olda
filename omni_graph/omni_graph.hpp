@@ -33,36 +33,34 @@ namespace olda
         // method hash is the hash of method
         std::string method_str;
         std::string method_hash;
-        
-        // param str has param value, the hash value of object 
+
+        // param str has param value, the hash value of object
         std::string param_str;
         std::size_t param_hash;
 
-
-        // flow hash is the flow of inside of the method 
+        // flow hash is the flow of inside of the method
         std::string flow_str;
         std::size_t flow_hash;
 
         // control flow hash is the method-call-chain of the hash
-        
+
         std::string control_flow_str = "";
         std::size_t control_flow_hash = 0;
-        
+
         std::string control_param_str = "";
         std::size_t control_param_hash = 0;
 
-
         /*
          * context hash is the flow hash of the parent hash.
-        */
+         */
         std::size_t context_hash;
-        
+
         std::string output_format;
         // id is unique number for specific method.
         // Note that som
         int id = 0;
         int edge_cnt = 0;
-        
+
         std::vector<std::string> param_list;
     };
 
@@ -77,12 +75,12 @@ namespace olda
         std::vector<std::vector<std::string>> typefile_parser(const std::string filepath);
         std::vector<std::vector<std::string>> objectfile_parser(const std::string filepath);
         std::map<int, std::string> stringfile_parser(const std::string filepath);
-        std::map<int,std::vector<std::string>> exceptionfile_parser(const std::string filepath);
+        std::map<int, std::vector<std::string>> exceptionfile_parser(const std::string filepath);
 
         std::string log_filename, dirname;
 
     public:
-        std::string type_filename, dataids_filename, object_filename, string_filename,exceptions_filename;
+        std::string type_filename, dataids_filename, object_filename, string_filename, exceptions_filename;
 
         std::vector<std::vector<std::string>> typefile, objectfile;
         std::map<int, std::string> stringfile;
@@ -112,14 +110,14 @@ namespace olda
 
         Graph g; // Main Graph
         Graph::vertex_descriptor root;
-        // {ThreadId : stack<>}           
+        // {ThreadId : stack<>}
         std::map<int, std::stack<Graph::vertex_descriptor>> vertex_stack; // call stack
-        
+
         std::map<int, std::stack<Graph::vertex_descriptor>> vertex_recored;
-        
+
         // {ThreadId : stack<>}
         std::map<int, std::stack<std::map<std::string, std::string>>> caller;
-        
+
         // {ThreadId : CALL_Instruction of stack<>}
         std::map<int, std::stack<std::map<std::string, std::string>>> call_inst_stack;
 
@@ -160,7 +158,9 @@ namespace olda
 
         bool is_debug;
 
-        std::vector<Graph::vertex_descriptor>path;
+        bool firstV = true;
+
+        std::vector<Graph::vertex_descriptor> path;
         inline void setFileData(FileDatas fd)
         {
             omni_log = fd.omni_log;
@@ -170,7 +170,7 @@ namespace olda
             stringfile = fd.stringfile;
         };
     };
-    
+
     std::vector<std::string> split(const std::string s, char terminator);
     bool is_exist(const std::vector<std::string> v, std::string log);
     bool is_string_type(const std::string &log);

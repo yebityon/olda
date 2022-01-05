@@ -68,6 +68,11 @@ namespace olda
         std::string prev_method_name = prev_method["MethodFullName"];
         std::string current_method_name = mep["MethodFullName"];
 
+        if (prev_method_name.find("maven") == std::string::npos && omni_graph.firstV && prev_method_name.find("testCrossings") != std::string::npos)
+        {
+            omni_graph.root = from;
+            omni_graph.firstV = false;
+        }
         // update current information
         omni_graph.g[to].method_hash = mep["Hash"];
         omni_graph.g[to].method_str = current_method_name;
@@ -104,8 +109,7 @@ namespace olda
 
         bool isObject = mp.find("objectType") != mp.end();
         const int thread_id = std::stoi(mp["ThreadId"]);
-        auto& call_inst_stack = omni_graph.call_inst_stack[thread_id];
-        
+        auto &call_inst_stack = omni_graph.call_inst_stack[thread_id];
 
         if (isObject)
         {
@@ -118,11 +122,10 @@ namespace olda
         {
             // std::cout << "[olda] Warning : Not object CALL is detected." << std::endl;
             // std::cout << "======== " << log << " ========" << std::endl;
-            
         }
-        
+
         call_inst_stack.push(mp);
-        
+
         return;
     }
 

@@ -71,7 +71,7 @@ namespace olda
 
     size_t get_control_hash(const method_vertex &v, std::map<std::string, std::string> &opt)
     {
-        if (opt.find("param") != opt.end())
+        if (opt["param"] == "valid")
             return v.control_param_hash;
 
         else
@@ -132,28 +132,41 @@ namespace olda
         boost::tie(obeg, oend) = boost::out_edges(vg, g);
         boost::tie(tbeg, tend) = boost::out_edges(vu, u);
 
-        if (not has_same_child(obeg, oend, tbeg, tend))
-        {
-            auto isolated_v = isorated_vertex(obeg, oend, g, tbeg, tend, u);
-            std::cout << "[olda]: "
-                      << "isolated vertex is defected" << std::endl;
-            if (std::distance(obeg, oend) > std::distance(tbeg, tend))
-            {
-                std::cout << g[isolated_v].method_str << " in Origin Graph" << std::endl;
-            }
-            else
-            {
-                std::cout << u[isolated_v].method_str << " in Targer Graph" << std::endl;
-            }
-            // There are some isolated vertex inthe Graph
-            return false;
-        }
-
         //  Guarantee that there are same child
         if (not(check_range(obeg, oend) && check_range(tbeg, tend)))
         {
             // Note: ALL child methods are iterated. NO need to traversal.
             return false;
+        }
+
+        if (not has_same_child(obeg, oend, tbeg, tend))
+        {
+            auto isolated_v = isorated_vertex(obeg, oend, g, tbeg, tend, u);
+            std::cout << "[olda]: "
+                      << "isolated vertex is defected" << std::endl;
+
+            size_t o_size = std::distance(obeg, oend);
+            size_t t_size = std::distance(tbeg, tend);
+
+            std::cout << g[vg].method_str << " in origin has " << o_size;
+            std::cout << " method call. but ";
+            std::cout << u[vu].method_str << " in target has " << t_size << " method calls" << std::endl;
+
+            // flush method call
+            std::cout << "[olda]: Origin method calls" << std::endl;
+            for (int i = 0; i < o_size; ++i)
+            {
+                std::cout << ">>>>> " << g[boost::target(*(obeg + i), g)].method_str << std::endl;
+            }
+
+            std::cout << "[olda]: Target method calls" << std::endl;
+            for (int i = 0; i < t_size; ++i)
+            {
+                std::cout << ">>>>> " << u[boost::target(*(tbeg + i), u)].method_str << std::endl;
+            }
+
+            // There are some isolated vertex inthe Graph
+            exit(0);
         }
 
         while (check_range(obeg, oend) && check_range(tbeg, tend))
@@ -446,7 +459,10 @@ namespace olda
         auto ov = origin.root;
         auto tv = target.root;
 
-        if (get_hash(g[origin.root], opt) == get_hash(u[target.root], opt))
+        std::cout << "root: " << g[origin.root].method_str << std::endl;
+        std::cout << "root: " << u[target.root].method_str << std::endl;
+
+        if (get_control_hash(g[origin.root], opt) == get_control_hash(u[target.root], opt))
         {
             std::cout << "[olda]: Completly Same Verticies" << std::endl;
             exit(0);
@@ -454,7 +470,7 @@ namespace olda
         auto v = boost::add_vertex(diffGraph);
         diffGraph[v] = g[ov];
 
-        dfs(ov, g, tv, u, -1, opt, diffGraph, true);
+        dfs(ov, g, tv, u, v, opt, diffGraph, false);
 
         // return diffGraph;
 
