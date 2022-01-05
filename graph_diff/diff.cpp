@@ -365,7 +365,12 @@ namespace olda
 
         origin_caller.push(origin.root);
         target_caller.push(target.root);
-
+        
+        if( get_hash(g[origin.root],opt) == get_hash(u[target.root],opt))
+        {
+            std::cout << "[olda]: Completly Same Verticies" << std::endl;
+            exit(0);
+        }
         bool synclonized = true;
         int clock = 0;
 
@@ -378,7 +383,7 @@ namespace olda
         {
             return v.control_flow_hash;
         };
-
+        
         while (synclonized)
         {
             auto otop = origin_caller.top();
