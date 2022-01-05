@@ -1,0 +1,7 @@
+digraph G {
+0[label="org/apache/maven/surefire/booter/PropertiesWrapper:getProperty"];
+1[label="org/apache/maven/surefire/booter/BooterDeserializer:deserialize"];
+2[label="org/apache/maven/surefire/booter/ForkedBooter:main"];
+1->0 [label=-1946175544];
+2->1 [label=-1946175544];
+}
