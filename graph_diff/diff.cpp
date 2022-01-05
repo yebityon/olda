@@ -84,6 +84,11 @@ namespace olda
         return std::distance(oi, oe) == std::distance(ti, te);
     }
 
+    auto check_range = [&](Graph::out_edge_iterator l, Graph::out_edge_iterator r)
+    {
+        return l != r;
+    };
+
     Graph::vertex_descriptor isorated_vertex(Graph::out_edge_iterator oi, Graph::out_edge_iterator oe, Graph &g,
                                              Graph::out_edge_iterator ti, Graph::out_edge_iterator te, Graph &u)
     {
@@ -116,6 +121,89 @@ namespace olda
                 }
             }
         }
+    }
+
+    bool dfs(Graph::vertex_descriptor vg, Graph &g,
+             Graph::vertex_descriptor vu, Graph &u, Graph::vertex_descriptor diffTop, std::map<std::string, std::string> &opt, Graph &diffGraph, bool is_root)
+    {
+        Graph::out_edge_iterator obeg, oend;
+        Graph::out_edge_iterator tbeg, tend;
+
+        boost::tie(obeg, oend) = boost::out_edges(vg, g);
+        boost::tie(tbeg, tend) = boost::out_edges(vu, u);
+
+        if (not has_same_child(obeg, oend, tbeg, tend))
+        {
+            auto isolated_v = isorated_vertex(obeg, oend, g, tbeg, tend, u);
+            std::cout << "[olda]: "
+                      << "isolated vertex is defected" << std::endl;
+            if (std::distance(obeg, oend) > std::distance(tbeg, tend))
+            {
+                std::cout << g[isolated_v].method_str << " in Origin Graph" << std::endl;
+            }
+            else
+            {
+                std::cout << u[isolated_v].method_str << " in Targer Graph" << std::endl;
+            }
+            // There are some isolated vertex inthe Graph
+            return false;
+        }
+
+        //  Guarantee that there are same child
+        if (not(check_range(obeg, oend) && check_range(tbeg, tend)))
+        {
+            // Note: ALL child methods are iterated. NO need to traversal.
+            return false;
+        }
+
+        while (check_range(obeg, oend) && check_range(tbeg, tend))
+        {
+            auto ocv = boost::target(*obeg, g);
+            auto tcv = boost::target(*tbeg, u);
+
+            if (g[ocv].method_str != u[tcv].method_str)
+            {
+                std::cout << "[olda] : Assertion Failed" << std::endl;
+                std::cout << ">>>>> " << g[ocv].method_str << "  and  " << g[ocv].method_str << " are different" << std::endl;
+                exit(0);
+            }
+
+            if (get_control_hash(g[ocv], opt) == get_control_hash(u[tcv], opt))
+            {
+
+                // Note child vertex has completely same hash, No need to traversal
+                if (check_range(obeg, oend) && check_range(tbeg, tend))
+                {
+                    ++obeg;
+                    ++tbeg;
+                }
+                else
+                {
+                    std::cout << "[olda]: Assertion failed. Hash value is same but there are no vettex to visit" << std::endl;
+                    exit(0);
+                }
+            }
+            else
+            {
+                // Note : the hash is different...  you need to travel more.
+                auto v = boost::add_vertex(diffGraph);
+                diffGraph[v] = g[ocv];
+
+                if (not is_root)
+                {
+                    Graph::edge_descriptor e;
+                    bool is_inserted = false;
+
+                    boost::tie(e, is_inserted) = boost::add_edge(diffTop, v, diffGraph);
+                }
+
+                dfs(ocv, g, tcv, u, v, opt, diffGraph, false);
+
+                return true;
+            }
+        }
+
+        return true;
     }
 
     std::vector<Graph::vertex_descriptor> filter(std::vector<Graph::vertex_descriptor> &path, Graph &g)
@@ -353,136 +441,140 @@ namespace olda
         Graph &u = target.g;
         Graph diffGraph;
 
-        std::stack<Graph::vertex_descriptor> diff_path;
+        // std::stack<Graph::vertex_descriptor> diff_path;
 
         auto ov = origin.root;
         auto tv = target.root;
 
-        // Treversal start from here..
-
-        std::stack<Graph::vertex_descriptor> origin_caller;
-        std::stack<Graph::vertex_descriptor> target_caller;
-
-        origin_caller.push(origin.root);
-        target_caller.push(target.root);
-        
-        if( get_hash(g[origin.root],opt) == get_hash(u[target.root],opt))
+        if (get_hash(g[origin.root], opt) == get_hash(u[target.root], opt))
         {
             std::cout << "[olda]: Completly Same Verticies" << std::endl;
             exit(0);
         }
-        bool synclonized = true;
-        int clock = 0;
+        auto v = boost::add_vertex(diffGraph);
+        diffGraph[v] = g[ov];
 
-        auto check_range = [&](Graph::out_edge_iterator l, Graph::out_edge_iterator r)
-        {
-            return l != r;
-        };
+        dfs(ov, g, tv, u, -1, opt, diffGraph, true);
 
-        auto get_hash = [&](method_vertex v, std::map<std::string, std::string> &opt)
-        {
-            return v.control_flow_hash;
-        };
-        
-        while (synclonized)
-        {
-            auto otop = origin_caller.top();
-            auto ttop = target_caller.top();
+        // return diffGraph;
 
-            Graph::out_edge_iterator obeg, oend;
-            boost::tie(obeg, oend) = boost::out_edges(otop, g);
+        // // Treversal start from here..
 
-            Graph::out_edge_iterator tbeg, tend;
-            boost::tie(tbeg, tend) = boost::out_edges(ttop, u);
+        // std::stack<Graph::vertex_descriptor> origin_caller;
+        // std::stack<Graph::vertex_descriptor> target_caller;
 
-            if (not has_same_child(obeg, oend, tbeg, tend))
-            {
-                auto isolated_v = isorated_vertex(obeg,oend,g,tbeg,tend,u);
-                std::cout << "[olda]: "
-                          << "isolated vertex is defected" << std::endl;
-                if(std::distance(obeg,oend) > std::distance(tbeg,tend))
-                {
-                    std::cout << g[isolated_v].method_str << " in Origin Graph" << std::endl;
-                } else {
-                    std::cout << u[isolated_v].method_str << " in Targer Graph" << std::endl;
-                }
-                // There are some isolated vertex inthe Graph
-                synclonized = false;
-                continue;
-            }
+        // origin_caller.push(origin.root);
+        // target_caller.push(target.root);
 
-            if (not(check_range(obeg, oend) && check_range(tbeg, tend)))
-            {
-                // No child here.
-                break;
-            }
+        // if (get_hash(g[origin.root], opt) == get_hash(u[target.root], opt))
+        // {
+        //     std::cout << "[olda]: Completly Same Verticies" << std::endl;
+        //     exit(0);
+        // }
+        // bool synclonized = true;
+        // int clock = 0;
 
-            bool cv_updated = false;
+        // while (synclonized)
+        // {
+        //     auto otop = origin_caller.top();
+        //     auto ttop = target_caller.top();
 
-            while ((not cv_updated))
-            {
-                auto ocv = boost::target(*obeg, g);
-                auto tcv = boost::target(*tbeg, u);
+        //     Graph::out_edge_iterator obeg, oend;
+        //     boost::tie(obeg, oend) = boost::out_edges(otop, g);
 
-                std::cout << g[otop].method_str << ": ->" << g[ocv].method_str << std::endl;
+        //     Graph::out_edge_iterator tbeg, tend;
+        //     boost::tie(tbeg, tend) = boost::out_edges(ttop, u);
 
-                if (g[ocv].method_str != u[tcv].method_str)
-                {
-                    std::cout << "[olda] : Assertion Failed" << std::endl;
-                    std::cout << ">>>>> " << g[ocv].method_str << "  and  " << g[ocv].method_str << " are different" << std::endl;
-                    exit(0);
-                }
+        //     if (not has_same_child(obeg, oend, tbeg, tend))
+        //     {
+        //         auto isolated_v = isorated_vertex(obeg, oend, g, tbeg, tend, u);
+        //         std::cout << "[olda]: "
+        //                   << "isolated vertex is defected" << std::endl;
+        //         if (std::distance(obeg, oend) > std::distance(tbeg, tend))
+        //         {
+        //             std::cout << g[isolated_v].method_str << " in Origin Graph" << std::endl;
+        //         }
+        //         else
+        //         {
+        //             std::cout << u[isolated_v].method_str << " in Targer Graph" << std::endl;
+        //         }
+        //         // There are some isolated vertex inthe Graph
+        //         synclonized = false;
+        //         continue;
+        //     }
 
-                if (get_control_hash(g[ocv], opt) == get_control_hash(u[tcv], opt))
-                {
+        //     if (not(check_range(obeg, oend) && check_range(tbeg, tend)))
+        //     {
+        //         // No child here.
+        //         break;
+        //     }
 
-                    // Note child vertex has completely same hash, No need to traversal
-                    if (check_range(obeg, oend) && check_range(tbeg, tend))
-                    {
-                        ++obeg;
-                        ++tbeg;
-                    }
-                    else
-                    {
-                        synclonized = false;
-                        break; // break from the vertex while
-                    }
-                } 
-                else
-                {
-                    // Note : the hash is different...  you need to travel more.
-                    cv_updated = true;
-                    origin_caller.push(ocv);
-                    target_caller.push(tcv);
-                }
-            }
-        }
+        //     bool cv_updated = false;
 
-        std::cout << "yebityon" << std::endl;
-        std::vector<Graph::vertex_descriptor> output;
+        //     while ((not cv_updated))
+        //     {
+        //         auto ocv = boost::target(*obeg, g);
+        //         auto tcv = boost::target(*tbeg, u);
 
-        while (not origin_caller.empty())
-        {
-            auto v = boost::add_vertex(diffGraph);
-            diffGraph[v] = g[origin_caller.top()];
+        //         std::cout << g[otop].method_str << ": ->" << g[ocv].method_str << std::endl;
 
-            if (not diff_path.empty())
-            {
-                Graph::edge_descriptor e;
-                bool is_inserted = false;
+        //         if (g[ocv].method_str != u[tcv].method_str)
+        //         {
+        //             std::cout << "[olda] : Assertion Failed" << std::endl;
+        //             std::cout << ">>>>> " << g[ocv].method_str << "  and  " << g[ocv].method_str << " are different" << std::endl;
+        //             exit(0);
+        //         }
 
-                boost::tie(e, is_inserted) = boost::add_edge(v, diff_path.top(), diffGraph);
-            }
-            diff_path.push(v);
-            output.emplace_back(origin_caller.top());
-            origin_caller.pop();
-        }
-        std::reverse(output.begin(), output.end());
+        //         if (get_control_hash(g[ocv], opt) == get_control_hash(u[tcv], opt))
+        //         {
 
-        for (auto &e : output)
-        {
-            std::cout << g[e].method_str << " -> ";
-        }
+        //             // Note child vertex has completely same hash, No need to traversal
+        //             if (check_range(obeg, oend) && check_range(tbeg, tend))
+        //             {
+        //                 ++obeg;
+        //                 ++tbeg;
+        //             }
+        //             else
+        //             {
+        //                 synclonized = false;
+        //                 break; // break from the vertex while
+        //             }
+        //         }
+        //         else
+        //         {
+        //             // Note : the hash is different...  you need to travel more.
+        //             cv_updated = true;
+        //             origin_caller.push(ocv);
+        //             target_caller.push(tcv);
+        //         }
+        //     }
+        // }
+
+        // std::cout << "yebityon" << std::endl;
+        // std::vector<Graph::vertex_descriptor> output;
+
+        // while (not origin_caller.empty())
+        // {
+        //     auto v = boost::add_vertex(diffGraph);
+        //     diffGraph[v] = g[origin_caller.top()];
+
+        //     if (not diff_path.empty())
+        //     {
+        //         Graph::edge_descriptor e;
+        //         bool is_inserted = false;
+
+        //         boost::tie(e, is_inserted) = boost::add_edge(v, diff_path.top(), diffGraph);
+        //     }
+        //     diff_path.push(v);
+        //     output.emplace_back(origin_caller.top());
+        //     origin_caller.pop();
+        // }
+        // std::reverse(output.begin(), output.end());
+
+        // for (auto &e : output)
+        // {
+        //     std::cout << g[e].method_str << " -> ";
+        // }
 
         std::cout << std::endl;
         std::cout << "[olda]: succesfully calculate diff Graph...\n";
