@@ -15,6 +15,8 @@ namespace olda
     {
         OmniGraph omni_graph;
         omni_graph.setFileData(fd);
+        omni_graph.target_method = opt["target"];
+
         for (auto &[object_id, str] : fd.stringfile)
         {
             omni_graph.object_order[object_id][-1] = str;
@@ -28,7 +30,8 @@ namespace olda
 
         for (std::string log : omni_graph.omni_log)
         {
-            if(omni_graph.is_debug){
+            if (omni_graph.is_debug)
+            {
                 std::cout << log << std::endl;
             }
             cnt += 1;
@@ -120,8 +123,8 @@ namespace olda
             std::cout << " **************** object_order *****************" << std::endl;
             for (auto &mp : omni_graph.object_order)
             {
-                std::cout << "+++++++++++ " << mp.first << " +++++++++++"  << std::endl;
-                
+                std::cout << "+++++++++++ " << mp.first << " +++++++++++" << std::endl;
+
                 for (auto &itr : mp.second)
                 {
                     std::cout << itr.first << " : " << itr.second << std::endl;

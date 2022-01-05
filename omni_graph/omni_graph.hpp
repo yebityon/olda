@@ -160,6 +160,8 @@ namespace olda
 
         bool firstV = true;
 
+        std::string target_method = "";
+
         std::vector<Graph::vertex_descriptor> path;
         inline void setFileData(FileDatas fd)
         {

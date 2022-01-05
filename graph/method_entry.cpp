@@ -68,7 +68,9 @@ namespace olda
         std::string prev_method_name = prev_method["MethodFullName"];
         std::string current_method_name = mep["MethodFullName"];
 
-        if (prev_method_name.find("maven") == std::string::npos && omni_graph.firstV && prev_method_name.find("testCrossings") != std::string::npos)
+        if (prev_method_name.find("maven") == std::string::npos &&
+            omni_graph.firstV &&
+            prev_method_name.find(omni_graph.target_method) != std::string::npos)
         {
             omni_graph.root = from;
             omni_graph.firstV = false;
