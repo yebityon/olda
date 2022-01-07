@@ -3,6 +3,8 @@
 namespace olda
 {
 
+    int diff_edge_cnt = 0;
+
     // visitor class for dfs
     class my_visitor : public boost::default_dfs_visitor
     {
@@ -51,29 +53,24 @@ namespace olda
 
     bool is_sameVertex(const method_vertex &lhs, const method_vertex &rhs, std::map<std::string, std::string> &opt)
     {
-        if (opt.find("param") != opt.end())
+        if (opt["param"] == "valid")
             return lhs.param_hash == rhs.param_hash;
-        if (opt.find("flow") != opt.end())
+        else
             return lhs.flow_hash == rhs.flow_hash;
-        if (opt.find("context") != opt.end())
-            return lhs.context_hash == rhs.context_hash;
     };
 
     size_t get_hash(const method_vertex &v, std::map<std::string, std::string> &opt)
     {
-        if (opt.find("param") != opt.end())
+        if (opt["param"] == "valid")
             return v.param_hash;
-        if (opt.find("flow") != opt.end())
+        else
             return v.flow_hash;
-        if (opt.find("context") != opt.end())
-            return v.context_hash;
     }
 
     size_t get_control_hash(const method_vertex &v, std::map<std::string, std::string> &opt)
     {
         if (opt["param"] == "valid")
             return v.control_param_hash;
-
         else
             return v.control_flow_hash;
     }
@@ -136,6 +133,7 @@ namespace olda
         if (not(check_range(obeg, oend) && check_range(tbeg, tend)))
         {
             // Note: ALL child methods are iterated. NO need to traversal.
+            // OK
             return true;
         }
 
@@ -205,12 +203,18 @@ namespace olda
                 auto v = boost::add_vertex(diffGraph);
                 diffGraph[v] = g[ocv];
 
+                diffGraph[v].method_str = diffGraph[v].method_str +
+                                          "\norigin=" + std::to_string(get_hash(g[ocv], opt)) +
+                                          "\no_control=" + std::to_string(get_control_hash(g[ocv], opt)) +
+                                          "\ntarget=" + std::to_string(get_hash(u[tcv], opt)) +
+                                          "\nt_control=" + std::to_string(get_control_hash(u[tcv], opt));
+
                 if (not is_root)
                 {
                     Graph::edge_descriptor e;
                     bool is_inserted = false;
-
                     boost::tie(e, is_inserted) = boost::add_edge(diffTop, v, diffGraph);
+                    diffGraph[e].cost = diff_edge_cnt++;
                 }
                 std::cout << g[ocv].method_str << ": " << ocv << " | " << u[tcv].method_str << ": " << tcv << std::endl;
                 bool res = dfs(ocv, g, tcv, u, v, opt, diffGraph, false);
@@ -222,8 +226,8 @@ namespace olda
                 ++titr;
             }
         }
-
-        return true;
+        std::cout << "something is wrong.....!" << std::endl;
+        return false;
     }
 
     std::vector<Graph::vertex_descriptor> filter(std::vector<Graph::vertex_descriptor> &path, Graph &g)

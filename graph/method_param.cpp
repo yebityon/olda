@@ -41,7 +41,11 @@ namespace olda
         std::string caller_vertex = caller.top()["Hash"];
 
         bool isObject = mpp.find("objectType") != mpp.end();
-        if (isObject)
+        if (isObject && mpp["ObjectType"] == "null")
+        {
+            param = "null_hash";
+        }
+        else if (isObject)
         {
             const int object_id = std::stoi(mpp["Value"]);
             const std::string object_hash = std::to_string(std::hash<std::string>()(omni_graph.object_order[object_id][-1]));

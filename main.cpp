@@ -56,8 +56,9 @@ int main(int argc, char *argv[])
             std::cout << "invalid option" << std::endl;
             exit(1);
         }
-        else if (arg.find("-") != std::string::npos)
+        else if (arg.find("-") != std::string::npos && arg[0] == '-')
         {
+            std::cout << arg << std::endl;
             opt["target"] = arg.substr(1);
         }
         else

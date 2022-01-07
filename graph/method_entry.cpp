@@ -78,12 +78,14 @@ namespace olda
         // update current information
         omni_graph.g[to].method_hash = mep["Hash"];
         omni_graph.g[to].method_str = current_method_name;
-        omni_graph.g[to].flow_str = omni_graph.context;
         // Note : previous method exsit.
         omni_graph.g[to].context_hash = omni_graph.g[from].flow_hash;
 
         // Init flow str.
         omni_graph.g[to].flow_str = "";
+        omni_graph.g[to].flow_hash = 0;
+
+        omni_graph.g[to].param_hash = 0;
 
         omni_graph.g[from].edge_cnt += 1;
 

@@ -21,8 +21,8 @@ namespace olda
 
         return mp;
     };
-    
-    std::map<std::string,std::string> _parse_call_exit(const std::string log)
+
+    std::map<std::string, std::string> _parse_call_exit(const std::string log)
     {
         auto res = olda::parse_bytecode(log);
         return res;
@@ -57,7 +57,6 @@ namespace olda
             return;
         };
 
-
         size_t return_hash = 0;
 
         const bool isObject = (mep.find("objectType") != mep.end());
@@ -82,9 +81,9 @@ namespace olda
             std::to_string(return_hash),
             [](auto &lhs, auto &rhs)
             { return lhs + rhs; }));
-        
+
         const std::string flow_str = omni_graph.g[vertex_stack.top()].flow_str;
-        
+
         const size_t flow_hash = std::hash<std::string>()(flow_str);
 
         omni_graph.g[vertex_stack.top()].param_hash = param_hash;
@@ -94,36 +93,36 @@ namespace olda
             std::hash<std::string>()(flow_str + omni_graph.g[vertex_stack.top()].control_flow_str);
         omni_graph.g[vertex_stack.top()].control_param_hash =
             std::hash<std::string>()(std::to_string(param_hash) + omni_graph.g[vertex_stack.top()].control_param_str);
-            
+
         // pop the method information.
         caller.pop();
         vertex_stack.pop();
-        
-        if(not vertex_stack.empty()){
+
+        if (not vertex_stack.empty())
+        {
 
             omni_graph.g[vertex_stack.top()].control_flow_str +=
                 std::to_string(std::hash<std::string>()(omni_graph.g[vertex_stack.top()].control_flow_str + flow_str));
 
             omni_graph.g[vertex_stack.top()].control_param_str +=
                 std::to_string(std::hash<std::string>()(omni_graph.g[vertex_stack.top()].control_param_str + std::to_string(param_hash)));
-        
         }
-        
-            omni_graph.local_fields.pop();
-            omni_graph.local_prim.pop();
-            omni_graph.local_obj.pop();
+
+        omni_graph.local_fields.pop();
+        omni_graph.local_prim.pop();
+        omni_graph.local_obj.pop();
 
         return;
     }
 
-    void parse_call_exit(const std::string log, OmniGraph& omni_graph)
+    void parse_call_exit(const std::string log, OmniGraph &omni_graph)
     {
         auto cep = _parse_call_exit(log);
         const int thread_id = std::stoi(cep["ThreadId"]);
 
         auto &call_inst_stack = omni_graph.call_inst_stack[thread_id];
-        auto& caller_top =call_inst_stack.top();
-        
+        auto &caller_top = call_inst_stack.top();
+
         assert(not call_inst_stack.empty());
         if (omni_graph.is_debug)
         {

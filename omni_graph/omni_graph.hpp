@@ -36,11 +36,11 @@ namespace olda
 
         // param str has param value, the hash value of object
         std::string param_str;
-        std::size_t param_hash;
+        std::size_t param_hash = -1;
 
         // flow hash is the flow of inside of the method
         std::string flow_str;
-        std::size_t flow_hash;
+        std::size_t flow_hash = -1;
 
         // control flow hash is the method-call-chain of the hash
 

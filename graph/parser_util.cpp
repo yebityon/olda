@@ -7,11 +7,12 @@ namespace olda
         std::map<std::string, std::string> res;
         std::vector<std::string> parsed_log = olda::split(inst, ',');
 
-        for (auto& inst : parsed_log)
+        for (auto &inst : parsed_log)
         {
             // for each instruction, get detail
             std::vector<std::string> inst_detail = olda::split(inst, '=');
-            if(inst_detail.empty()) continue;
+            if (inst_detail.empty())
+                continue;
 
             if (inst_detail.size() < 2)
             {
@@ -31,21 +32,28 @@ namespace olda
     {
         auto parsed_log = olda::split(log, ',');
 
-        // earse line number
-        parsed_log.back() = parsed_log.back().substr(0, parsed_log.back().find(':'));
+        // // earse line number
+        // parsed_log.back() = parsed_log.back().substr(0, parsed_log.back().find(':'));
 
-        // erase dataid
-        // Value and EventId might be different... because of the order of bytecode.
-        auto itr = std::remove_if(parsed_log.begin(), parsed_log.end(),
-                                  [](const std::string e)
-                                  {
-                                      return e.find("DataId=") != std::string::npos ||
-                                             e.find("Value=") != std::string::npos ||
-                                             e.find("EventId=") != std::string::npos;
-                                  });
-        parsed_log.erase(itr, parsed_log.end());
+        // // erase dataid
+        // // Value and EventId might be different... because of the order of bytecode.
+        // auto itr = std::remove_if(parsed_log.begin(), parsed_log.end(),
+        //                           [](const std::string e)
+        //                           {
+        //                               return e.find("DataId=") != std::string::npos ||
+        //                                      e.find("Value=") != std::string::npos ||
+        //                                      e.find("EventId=") != std::string::npos;
+        //                           });
+        // parsed_log.erase(itr, parsed_log.end());
 
-        return std::accumulate(parsed_log.begin(), parsed_log.end(), std::string(""));
+        std::string res = "";
+        for (auto &s : parsed_log)
+        {
+            if (s.find("EventType=") != std::string::npos)
+                res += s;
+        }
+        return res;
+        //        return std::accumulate(parsed_log.begin(), parsed_log.end(), std::string(""));
     }
-    
+
 }
