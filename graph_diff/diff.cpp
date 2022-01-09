@@ -123,6 +123,7 @@ namespace olda
     bool dfs(Graph::vertex_descriptor vg, Graph &g,
              Graph::vertex_descriptor vu, Graph &u, Graph::vertex_descriptor diffTop, std::map<std::string, std::string> &opt, Graph &diffGraph, bool is_root)
     {
+        // DFS will return `true` iff the vertex has different control hash &&  that is leaf of the graph.
         Graph::out_edge_iterator obeg, oend;
         Graph::out_edge_iterator tbeg, tend;
 
@@ -134,7 +135,7 @@ namespace olda
         {
             // Note: ALL child methods are iterated. NO need to traversal.
             // Iteration continue;
-            return false;
+            return true;
         }
 
         if (not has_same_child(obeg, oend, tbeg, tend))
@@ -170,6 +171,9 @@ namespace olda
 
         auto oitr = obeg;
         auto titr = tbeg;
+
+        // iterate all child vertex
+
         while (check_range(oitr, oend) && check_range(titr, tend))
         {
             auto ocv = boost::target(*oitr, g);
