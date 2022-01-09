@@ -120,6 +120,131 @@ namespace olda
         }
     }
 
+    bool synclonized_dfs(Graph::vertex_descriptor pg, Graph::vertex_descriptor cg, Graph &g,
+                         Graph::vertex_descriptor pu, Graph::vertex_descriptor cu, Graph &u,
+                         Graph::vertex_descriptor diffTop, std::map<std::string, std::string> &opt,
+                         Graph &diffGraph, bool is_root = false)
+    {
+        Graph::out_edge_iterator obeg, oend;
+        Graph::out_edge_iterator tbeg, tend;
+
+        boost::tie(obeg, oend) = boost::out_edges(cg, g);
+        boost::tie(tbeg, tend) = boost::out_edges(cu, u);
+
+        // vertex validation
+        if (g[cg].method_str != u[cu].method_str)
+        {
+            std::cout << "[olda]: diff Graph assertion. Unexpected Error is detected" << std::endl;
+            return true;
+        }
+
+        if (get_control_hash(g[cg], opt) == get_control_hash(u[cu], opt))
+        {
+            // Same vertex. No need to Iterate
+            auto v = boost::add_vertex(diffGraph);
+            diffGraph[v] = g[cg];
+
+            if (not is_root)
+            {
+                Graph::edge_descriptor e;
+                bool is_inserted = false;
+                boost::tie(e, is_inserted) = boost::add_edge(diffTop, v, diffGraph);
+                diffGraph[e].cost = diff_edge_cnt++;
+            }
+
+            return false;
+        }
+
+        // Note : current vertex is Disaligned.
+        if (not has_same_child(obeg, oend, tbeg, tend))
+        {
+            auto gitr = obeg;
+            auto uitr = tbeg;
+
+            bool diff_path_found = false;
+
+            auto v = boost::add_vertex(diffGraph);
+            diffGraph[v] = g[cg];
+
+            while (gitr < oend && uitr < tend && !diff_path_found)
+            {
+                auto next_cg = boost::target(*gitr, g);
+                auto next_cu = boost::target(*uitr, u);
+
+                diff_path_found = synclonized_dfs(cg, next_cg, g, cu, next_cu, u, v, opt, diffGraph);
+
+                ++gitr;
+                ++uitr;
+            }
+
+            std::cout << "[olda]: "
+                      << "isolated vertex is defected" << std::endl;
+            size_t o_size = std::distance(gitr, oend);
+            size_t t_size = std::distance(uitr, tend);
+
+            std::cout << g[cg].method_str << " "
+                      << " in origin has " << o_size;
+            std::cout << " method call. but ";
+            std::cout << u[cu].method_str << " "
+                      << " in target has " << t_size << " method calls" << std::endl;
+
+            // flush method call
+            std::cout << "[olda]: Origin method calls" << std::endl;
+            for (int i = 0; i < o_size; ++i)
+            {
+                std::cout << ">>>>> " << g[boost::target(*(gitr + i), g)].method_str << ": " << get_control_hash(g[boost::target(*(gitr + i), g)], opt) << std::endl;
+            }
+
+            std::cout << "[olda]: Target method calls" << std::endl;
+            for (int i = 0; i < t_size; ++i)
+            {
+                std::cout << ">>>>> " << u[boost::target(*(uitr + i), u)].method_str << ": " << get_control_hash(u[boost::target(*(uitr + i), u)], opt) << std::endl;
+            }
+
+            return true;
+        }
+
+        auto v = boost::add_vertex(diffGraph);
+        diffGraph[v] = g[cg];
+
+        if (not is_root)
+        {
+            Graph::edge_descriptor e;
+            bool is_inserted = false;
+            boost::tie(e, is_inserted) = boost::add_edge(diffTop, v, diffGraph);
+            diffGraph[e].cost = diff_edge_cnt++;
+        }
+
+        // ccurrent vertex
+        if (std::distance(obeg, oend) == 0)
+        {
+            assert(std::distance(tbeg, tend) == 0);
+            return get_control_hash(g[cg], opt) == get_control_hash(u[cu], opt);
+        }
+
+        // this vertex is leaf, aligned and same child number
+
+        auto gitr = obeg;
+        auto uitr = tbeg;
+
+        assert(std::distance(gitr, oend) == std::distance(uitr, tend));
+
+        bool diff_path_found = false;
+
+        while (gitr < oend && uitr < tend && !diff_path_found)
+        {
+            auto next_cg = boost::target(*gitr, g);
+            auto next_cu = boost::target(*uitr, u);
+
+            diff_path_found = synclonized_dfs(cg, next_cg, g, cu, next_cu, u, v, opt, diffGraph);
+
+            ++gitr;
+            ++uitr;
+        }
+
+        // Note: All of are iterated, return true to teminate.
+        return true;
+    }
     bool dfs(Graph::vertex_descriptor vg, Graph &g,
              Graph::vertex_descriptor vu, Graph &u, Graph::vertex_descriptor diffTop, std::map<std::string, std::string> &opt, Graph &diffGraph, bool is_root)
     {
@@ -491,7 +616,7 @@ namespace olda
         auto v = boost::add_vertex(diffGraph);
         diffGraph[v] = g[ov];
 
-        dfs(ov, g, tv, u, v, opt, diffGraph, false);
+        synclonized_dfs(ov, ov, g, tv, tv, u, v, opt, diffGraph, true);
 
         std::cout << "[olda]: DONE\n"
                   << std::endl;
