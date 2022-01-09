@@ -49,14 +49,14 @@ namespace olda
         {
             // if the caller is empty, it indicate that this is the initial method.
 
-            omni_graph.root = add_vertex(omni_graph.g);
-            omni_graph.g[omni_graph.root].method_hash = mep["Hash"];
-            omni_graph.g[omni_graph.root].edge_cnt += 1;
-            omni_graph.g[omni_graph.root].method_str = mep["MethodFullName"];
-            omni_graph.g[omni_graph.root].flow_str = "";
+            auto v = add_vertex(omni_graph.g);
+            omni_graph.g[v].method_hash = mep["Hash"];
+            omni_graph.g[v].edge_cnt += 1;
+            omni_graph.g[v].method_str = mep["MethodFullName"];
+            omni_graph.g[v].flow_str = "";
             caller.push(mep);
-            vertex_stack.push(omni_graph.root);
-            omni_graph.path.emplace_back(omni_graph.root);
+            vertex_stack.push(v);
+            omni_graph.path.emplace_back(v);
 
             return;
         }
@@ -68,8 +68,7 @@ namespace olda
         std::string prev_method_name = prev_method["MethodFullName"];
         std::string current_method_name = mep["MethodFullName"];
 
-        if (prev_method_name.find("maven") == std::string::npos &&
-            omni_graph.firstV &&
+        if (omni_graph.firstV &&
             prev_method_name.find(omni_graph.target_method) != std::string::npos)
         {
             omni_graph.root = from;

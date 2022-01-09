@@ -113,8 +113,6 @@ namespace olda
         // {ThreadId : stack<>}
         std::map<int, std::stack<Graph::vertex_descriptor>> vertex_stack; // call stack
 
-        std::map<int, std::stack<Graph::vertex_descriptor>> vertex_recored;
-
         // {ThreadId : stack<>}
         std::map<int, std::stack<std::map<std::string, std::string>>> caller;
 

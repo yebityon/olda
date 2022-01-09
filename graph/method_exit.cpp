@@ -45,16 +45,19 @@ namespace olda
 
         if (caller_top["MethodFullName"] != mep["MethodFullName"])
         {
-            std::cout << "Assertion failed:";
-            std::cout << caller_top["MethodFullName"] << " " << mep["MethodFullName"] << std::endl;
+            // Note CALL method
             // something Invalid. Skip the vertex
             caller.pop();
             vertex_stack.pop();
             omni_graph.local_fields.pop();
             omni_graph.local_prim.pop();
             omni_graph.local_obj.pop();
-
-            return;
+            if (caller.empty() || caller.top()["MethodFullName"] != mep["MethodFullName"])
+            {
+                std::cout << "Assertion failed:";
+                std::cout << caller_top["MethodFullName"] << " | " << mep["MethodFullName"] << std::endl;
+                return;
+            }
         };
 
         size_t return_hash = 0;

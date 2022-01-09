@@ -133,8 +133,8 @@ namespace olda
         if (not(check_range(obeg, oend) && check_range(tbeg, tend)))
         {
             // Note: ALL child methods are iterated. NO need to traversal.
-            // OK
-            return true;
+            // Iteration continue;
+            return false;
         }
 
         if (not has_same_child(obeg, oend, tbeg, tend))
@@ -204,10 +204,14 @@ namespace olda
                 diffGraph[v] = g[ocv];
 
                 diffGraph[v].method_str = diffGraph[v].method_str +
-                                          "\norigin=" + std::to_string(get_hash(g[ocv], opt)) +
-                                          "\no_control=" + std::to_string(get_control_hash(g[ocv], opt)) +
-                                          "\ntarget=" + std::to_string(get_hash(u[tcv], opt)) +
-                                          "\nt_control=" + std::to_string(get_control_hash(u[tcv], opt));
+                                          "\noparam=" + std::to_string(g[ocv].param_hash) +
+                                          "\noflow=" + std::to_string(g[ocv].flow_hash) +
+                                          "\nocparam=" + std::to_string(g[ocv].control_param_hash) +
+                                          "\nocflow=" + std::to_string(g[ocv].control_flow_hash) +
+                                          "\ntparam=" + std::to_string(u[tcv].param_hash) +
+                                          "\ntflow=" + std::to_string(u[tcv].flow_hash) +
+                                          "\ntcparam=" + std::to_string(u[tcv].control_param_hash) +
+                                          "\ntcflow=" + std::to_string(u[tcv].control_flow_hash);
 
                 if (not is_root)
                 {
@@ -217,17 +221,19 @@ namespace olda
                     diffGraph[e].cost = diff_edge_cnt++;
                 }
                 std::cout << g[ocv].method_str << ": " << ocv << " | " << u[tcv].method_str << ": " << tcv << std::endl;
+
                 bool res = dfs(ocv, g, tcv, u, v, opt, diffGraph, false);
                 if (not res)
                 {
-                    return false;
+                    // DFS will be terminated iff There is vertex that have different hash in current child.
+                    return true;
                 }
                 ++oitr;
                 ++titr;
             }
         }
         std::cout << "something is wrong.....!" << std::endl;
-        return false;
+        return true;
     }
 
     std::vector<Graph::vertex_descriptor> filter(std::vector<Graph::vertex_descriptor> &path, Graph &g)
