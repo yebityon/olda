@@ -1,0 +1,105 @@
+digraph G {
+0[label="DiffGraph of Olda"];
+1[label="com/google/javascript/jscomp/InlineFunctionsTest:testInlineFunctions22
+oparam=12922260180538303114
+oflow=7738540603065122163
+ocparam=1963438163482005343
+ocflow=6862836688905845724
+tparam=14522587036010396364
+tflow=4585122359757542555
+tcparam=10270710645814011858
+tcflow=10592468045749118578"];
+2[label="com/google/javascript/jscomp/CompilerTestCase:test
+oparam=14158541275026235400
+oflow=18179565589620230576
+ocparam=17602237667843707481
+ocflow=2264118671620532950
+tparam=2085428964031793186
+tflow=15108771396835212976
+tcparam=4217271614745354562
+tcflow=10040505249076130101"];
+3[label="com/google/javascript/jscomp/CompilerTestCase:test
+oparam=10907849468547160246
+oflow=11750825094964969441
+ocparam=17665740347641538881
+ocflow=6286372673325110767
+tparam=17869584847204831746
+tflow=8379056638327499454
+tcparam=11822289351360874296
+tcflow=17287161907876601304"];
+4[label="com/google/javascript/jscomp/CompilerTestCase:test
+oparam=6111311693585165638
+oflow=16427598223436348876
+ocparam=393349187349694395
+ocflow=16923319814583654530
+tparam=1537399904705143638
+tflow=14238416085097922848
+tcparam=11337248008610458646
+tcflow=10176363915389461762"];
+5[label="com/google/javascript/jscomp/CompilerTestCase:test
+oparam=18270643154079475508
+oflow=13146487079925342179
+ocparam=4488284047455072414
+ocflow=253084863530755812
+tparam=3210307308594067803
+tflow=7187288547855870563
+tcparam=1716945900012728897
+tcflow=6663364029807145509"];
+6[label="com/google/javascript/jscomp/CompilerTestCase:createCompiler
+oparam=15456308706954776364
+oflow=1457653366724167655
+ocparam=16985795187064765645
+ocflow=9501001156205989906
+tparam=6853031798794590298
+tflow=1457653366724167655
+tcparam=2322526737293359149
+tcflow=13154581378841119194"];
+7[label="com/google/javascript/jscomp/AbstractCompiler:<clinit>
+Same Hash"];
+8[label="com/google/javascript/jscomp/Compiler:<clinit>
+oparam=14522587036010396364
+oflow=4107441324381376250
+ocparam=8348828989255011588
+ocflow=4708075388851855396
+tparam=14522587036010396364
+tflow=5394188161977383207
+tcparam=8348828989255011588
+tcflow=11816783125229998390"];
+9[label="com/google/javascript/jscomp/DiagnosticType:error
+Same Hash"];
+10[label="com/google/javascript/jscomp/DiagnosticType:error
+Same Hash"];
+11[label="com/google/javascript/jscomp/DiagnosticType:error
+Same Hash"];
+12[label="com/google/javascript/jscomp/DiagnosticType:error
+Same Hash"];
+13[label="com/google/javascript/jscomp/DiagnosticType:error
+Same Hash"];
+14[label="com/google/javascript/jscomp/Compiler$1:<init>
+Same Hash"];
+15[label="com/google/javascript/jscomp/DiagnosticType:error
+Same Hash"];
+16[label="com/google/javascript/jscomp/DiagnosticType:error
+Same Hash"];
+17[label="com/google/javascript/jscomp/DiagnosticType:error
+Same Hash"];
+18[label="com/google/javascript/jscomp/DiagnosticType:error
+Same Hash"];
+1->2 [label=0];
+2->3 [label=1];
+3->4 [label=2];
+4->5 [label=3];
+5->6 [label=4];
+6->7 [label=5];
+6->8 [label=6];
+8->9 [label=7];
+8->10 [label=8];
+8->11 [label=9];
+8->12 [label=10];
+8->13 [label=11];
+8->14 [label=12];
+8->15 [label=13];
+8->16 [label=14];
+8->17 [label=15];
+8->18 [label=16];
+}
