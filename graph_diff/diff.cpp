@@ -138,6 +138,24 @@ namespace olda
             std::cout << "Origin: " << g[cg].method_str << " "
                       << "Target: " << u[cu].method_str << std::endl;
 
+            auto v1 = boost::add_vertex(diffGraph);
+            auto v2 = boost::add_vertex(diffGraph);
+
+            //
+
+            diffGraph[v1].method_str = "DIFFERENT METHOD_CALL\nORIGIN : " + g[cg].method_str;
+            diffGraph[v2].method_str = "DIFFERENT METHOD_CALL\nTARGET : " + u[cu].method_str;
+            if (not is_root)
+            {
+                Graph::edge_descriptor e;
+                bool is_inserted = false;
+                boost::tie(e, is_inserted) = boost::add_edge(diffTop, v1, diffGraph);
+                diffGraph[e].cost = diff_edge_cnt++;
+
+                boost::tie(e, is_inserted) = boost::add_edge(diffTop, v2, diffGraph);
+                diffGraph[e].cost = diff_edge_cnt++;
+            }
+
             return true;
         }
 

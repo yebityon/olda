@@ -87,23 +87,23 @@ namespace olda
             {
                 parse_write_array(log, omni_graph);
             }
-            else if (eventType.find("CALL") != std::string::npos)
-            {
-                // TODO : CALL Instruction should be recored to the object page
-                // ONLY catch CALL Instruction.
-                if (eventType == "CALL")
-                {
-                    parse_call_entry(log, omni_graph);
-                }
-                else if (eventType == "CALL_PARAM")
-                {
-                    parse_call_param(log, omni_graph);
-                }
-                else if (eventType == "CALL_RETURN")
-                {
-                    parse_call_exit(log, omni_graph);
-                }
-            }
+            // else if (eventType.find("CALL") != std::string::npos)
+            // {
+            //     // TODO : CALL Instruction should be recored to the object page
+            //     // ONLY catch CALL Instruction.
+            //     if (eventType == "CALL")
+            //     {
+            //         parse_call_entry(log, omni_graph);
+            //     }
+            //     else if (eventType == "CALL_PARAM")
+            //     {
+            //         parse_call_param(log, omni_graph);
+            //     }
+            //     else if (eventType == "CALL_RETURN")
+            //     {
+            //         parse_call_exit(log, omni_graph);
+            //     }
+            // }
             else
             {
 
