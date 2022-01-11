@@ -89,25 +89,43 @@ namespace olda
 
         const size_t flow_hash = std::hash<std::string>()(flow_str);
 
+        const size_t control_flow_hash = std::hash<std::string>()(std::to_string(flow_hash) + std::to_string(omni_graph.g[vertex_stack.top()].control_flow_hash));
+
+        const size_t control_param_hash = std::hash<std::string>()(std::to_string(param_hash) + std::to_string(omni_graph.g[vertex_stack.top()].control_param_hash));
+
         omni_graph.g[vertex_stack.top()].param_hash = param_hash;
         omni_graph.g[vertex_stack.top()].flow_hash = flow_hash;
-        omni_graph.g[vertex_stack.top()].control_flow_hash =
-            std::hash<std::string>()(std::to_string(flow_hash) + std::to_string(omni_graph.g[vertex_stack.top()].control_flow_hash));
-        omni_graph.g[vertex_stack.top()].control_param_hash =
-            std::hash<std::string>()(std::to_string(param_hash) + std::to_string(omni_graph.g[vertex_stack.top()].control_param_hash));
+        omni_graph.g[vertex_stack.top()].control_flow_hash = control_flow_hash;
+
+        omni_graph.g[vertex_stack.top()].control_param_hash = control_param_hash;
 
         // pop the method information.
+        auto id = vertex_stack.top();
         caller.pop();
         vertex_stack.pop();
 
         if (not vertex_stack.empty())
         {
+            if (log.find("Optimizer:doOptimize") != std::string::npos || log.find("Optimizer:optimize") != std::string::npos)
+            {
+                std::cout << "################################################################" << std::endl;
+
+                std::cout << "caller: " << omni_graph.g[vertex_stack.top()].method_str << " id:" << vertex_stack.top() << std::endl;
+                std::cout << "callee: " << mep["MethodFullName"] << " id:" << id << std::endl;
+
+                std::cout << "################################################################" << std::endl;
+            }
 
             omni_graph.g[vertex_stack.top()].control_flow_str +=
                 std::to_string(std::hash<std::string>()(omni_graph.g[vertex_stack.top()].control_flow_str + flow_str));
 
             omni_graph.g[vertex_stack.top()].control_param_str +=
                 std::to_string(std::hash<std::string>()(omni_graph.g[vertex_stack.top()].control_param_str + std::to_string(param_hash)));
+
+            omni_graph.g[vertex_stack.top()].control_flow_hash =
+                std::hash<std::string>()(std::to_string(control_flow_hash) + std::to_string(omni_graph.g[vertex_stack.top()].control_flow_hash));
+            omni_graph.g[vertex_stack.top()].control_param_hash =
+                std::hash<std::string>()(std::to_string(control_param_hash) + std::to_string(omni_graph.g[vertex_stack.top()].control_param_hash));
         }
 
         omni_graph.local_fields.pop();

@@ -143,8 +143,10 @@ namespace olda
 
             //
 
-            diffGraph[v1].method_str = "DIFFERENT METHOD_CALL\nORIGIN : " + g[cg].method_str;
-            diffGraph[v2].method_str = "DIFFERENT METHOD_CALL\nTARGET : " + u[cu].method_str;
+            diffGraph[v1].method_str = "DIFFERENT METHOD_CALL\nORIGIN : " + g[cg].method_str + "\n" + std::to_string(cg) + " : " + std::to_string(cu);
+            ;
+            diffGraph[v2].method_str = "DIFFERENT METHOD_CALL\nTARGET : " + u[cu].method_str + "\n" + std::to_string(cg) + " : " + std::to_string(cu);
+            ;
             if (not is_root)
             {
                 Graph::edge_descriptor e;
@@ -173,7 +175,8 @@ namespace olda
         if (get_control_hash(g[cg], opt) == get_control_hash(u[cu], opt))
         {
             // Same vertex. No need to Iterate
-            diffGraph[v].method_str = diffGraph[v].method_str + "\nSame Hash";
+            diffGraph[v].method_str = diffGraph[v].method_str + "\nSame Hash" + "\n" + std::to_string(cg) + " : " + std::to_string(cu);
+            ;
             return false;
         }
 
@@ -233,7 +236,8 @@ namespace olda
                                   "\ntparam=" + std::to_string(u[cu].param_hash) +
                                   "\ntflow=" + std::to_string(u[cu].flow_hash) +
                                   "\ntcparam=" + std::to_string(u[cu].control_param_hash) +
-                                  "\ntcflow=" + std::to_string(u[cu].control_flow_hash);
+                                  "\ntcflow=" + std::to_string(u[cu].control_flow_hash) +
+                                  "\n" + std::to_string(cg) + " : " + std::to_string(cu);
 
         // ccurrent vertex
         if (std::distance(obeg, oend) == 0)

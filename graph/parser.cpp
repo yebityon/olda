@@ -43,6 +43,14 @@ namespace olda
 
             const std::string eventType = olda::parse_bytecode(log)["EventType"];
 
+            if (eventType == "METHOD_ENTRY" || eventType == "METHOD_NORMAL_EXIT" || eventType == "METHOD_EXCEPTIONAL_EXIT")
+            {
+                if (log.find("Optimizer:doOptimize") != std::string::npos || log.find("Optimizer:optimize") != std::string::npos)
+                {
+                    std::cout << log << std::endl;
+                }
+            }
+
             if (eventType == "METHOD_ENTRY")
             {
                 const int thread_id = std::stoi(extract_method_from_dataids(log, "ThreadId="));
