@@ -91,6 +91,10 @@ namespace olda
 
         omni_graph.g[vertex_stack.top()].param_hash = param_hash;
         omni_graph.g[vertex_stack.top()].flow_hash = flow_hash;
+        omni_graph.g[vertex_stack.top()].control_flow_hash =
+            std::hash<std::string>()(std::to_string(flow_hash) + std::to_string(omni_graph.g[vertex_stack.top()].control_flow_hash));
+        omni_graph.g[vertex_stack.top()].control_param_hash =
+            std::hash<std::string>()(std::to_string(param_hash) + std::to_string(omni_graph.g[vertex_stack.top()].control_param_hash));
 
         // pop the method information.
         caller.pop();
@@ -104,11 +108,6 @@ namespace olda
 
             omni_graph.g[vertex_stack.top()].control_param_str +=
                 std::to_string(std::hash<std::string>()(omni_graph.g[vertex_stack.top()].control_param_str + std::to_string(param_hash)));
-
-            omni_graph.g[vertex_stack.top()].control_flow_hash =
-                std::hash<std::string>()(flow_str + omni_graph.g[vertex_stack.top()].control_flow_str);
-            omni_graph.g[vertex_stack.top()].control_param_hash =
-                std::hash<std::string>()(std::to_string(param_hash) + omni_graph.g[vertex_stack.top()].control_param_str);
         }
 
         omni_graph.local_fields.pop();
