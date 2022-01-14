@@ -175,7 +175,7 @@ namespace olda
         if (get_control_hash(g[cg], opt) == get_control_hash(u[cu], opt))
         {
             // Same vertex. No need to Iterate
-            diffGraph[v].method_str = diffGraph[v].method_str + "\nSame Hash" + "\n" + std::to_string(cg) + " : " + std::to_string(cu);
+            diffGraph[v].method_str = diffGraph[v].method_str + "\nSame Hash";
             ;
             return false;
         }
@@ -236,14 +236,13 @@ namespace olda
                                   "\ntparam=" + std::to_string(u[cu].param_hash) +
                                   "\ntflow=" + std::to_string(u[cu].flow_hash) +
                                   "\ntcparam=" + std::to_string(u[cu].control_param_hash) +
-                                  "\ntcflow=" + std::to_string(u[cu].control_flow_hash) +
-                                  "\n" + std::to_string(cg) + " : " + std::to_string(cu);
+                                  "\ntcflow=" + std::to_string(u[cu].control_flow_hash);
 
         // ccurrent vertex
         if (std::distance(obeg, oend) == 0)
         {
             assert(std::distance(tbeg, tend) == 0);
-            return get_control_hash(g[cg], opt) == get_control_hash(u[cu], opt);
+            return get_control_hash(g[cg], opt) != get_control_hash(u[cu], opt);
         }
 
         // this vertex is leaf, aligned and same child number
@@ -520,7 +519,7 @@ namespace olda
         }
 
         auto v = boost::add_vertex(diffGraph);
-        diffGraph[v].method_str = "DiffGraph of Olda";
+        diffGraph[v].method_str = opt["target"] + " of diffGraph";
         synclonized_dfs(ov, ov, g, tv, tv, u, v, opt, diffGraph, true);
 
         std::cout << "[olda]: DONE\n"

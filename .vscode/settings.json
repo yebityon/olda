@@ -17,7 +17,7 @@
       ]
     }
   ],
-  
+
   "editor.formatOnType": true,
   "editor.formatOnSave": true,
 
@@ -97,5 +97,6 @@
     "unordered_map": "cpp",
     "utility": "cpp",
     "vector": "cpp"
-  }
+  },
+  "java.configuration.updateBuildConfiguration": "automatic"
 }
