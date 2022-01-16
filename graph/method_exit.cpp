@@ -106,16 +106,6 @@ namespace olda
 
         if (not vertex_stack.empty())
         {
-            if (log.find("Optimizer:doOptimize") != std::string::npos || log.find("Optimizer:optimize") != std::string::npos)
-            {
-                std::cout << "################################################################" << std::endl;
-
-                std::cout << "caller: " << omni_graph.g[vertex_stack.top()].method_str << " id:" << vertex_stack.top() << std::endl;
-                std::cout << "callee: " << mep["MethodFullName"] << " id:" << id << std::endl;
-
-                std::cout << "################################################################" << std::endl;
-            }
-
             omni_graph.g[vertex_stack.top()].control_flow_str +=
                 std::to_string(std::hash<std::string>()(omni_graph.g[vertex_stack.top()].control_flow_str + flow_str));
 
