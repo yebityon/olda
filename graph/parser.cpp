@@ -99,18 +99,18 @@ namespace olda
             {
                 // TODO : CALL Instruction should be recored to the object page
                 // ONLY catch CALL Instruction.
-                if (eventType == "CALL")
-                {
-                    parse_call_entry(log, omni_graph);
-                }
-                else if (eventType == "CALL_PARAM")
-                {
-                    parse_call_param(log, omni_graph);
-                }
-                else if (eventType == "CALL_RETURN")
-                {
-                    parse_call_exit(log, omni_graph);
-                }
+                // if (eventType == "CALL")
+                // {
+                //     parse_call_entry(log, omni_graph);
+                // }
+                // else if (eventType == "CALL_PARAM")
+                // {
+                //     parse_call_param(log, omni_graph);
+                // }
+                // else if (eventType == "CALL_RETURN")
+                // {
+                //     parse_call_exit(log, omni_graph);
+                // }
 
                 const int thread_id = std::stoi(extract_method_from_dataids(log, "ThreadId="));
                 auto &vertex_stack = omni_graph.vertex_stack[thread_id];
